@@ -1,150 +1,121 @@
 <script setup>
-import { computed } from 'vue'
 import { useSchedule } from '../composables/useSchedule'
 
 const { 
   activeSchedules, 
-  selectedDay,
-  schedules
+  currentTimeString
 } = useSchedule()
-
-const daysOfWeek = [
-  { id: 1, name: 'Lunes' }, { id: 2, name: 'Martes' }, { id: 3, name: 'Miércoles' },
-  { id: 4, name: 'Jueves' }, { id: 5, name: 'Viernes' }, { id: 6, name: 'Sábado' }, { id: 0, name: 'Domingo' }
-]
-
-const filteredSchedules = computed(() => {
-  const today = new Date().getDay()
-  if (selectedDay.value === today) return activeSchedules.value
-  
-  // Si no es hoy, mostrar todos los del día seleccionado sin filtro de hora (modo consulta)
-  return schedules.value.filter(s => s.dayOfWeek === selectedDay.value)
-})
 </script>
 
 <template>
-  <div class="monitor-neon min-h-screen bg-black text-white p-6 md:p-10 overflow-hidden font-sans">
+  <div class="monitor-neon min-h-screen bg-black text-white p-6 md:p-10 overflow-hidden font-sans flex items-center justify-center">
     
-
-
-      <!-- Selector de Día en Monitor -->
-      <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md">
-        <button 
-          v-for="day in daysOfWeek" :key="day.id"
-          @click="selectedDay = day.id"
-          class="px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
-          :class="selectedDay === day.id ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'text-gray-500 hover:text-gray-300'"
-        >
-          {{ day.name.substring(0,2) }}
-        </button>
+    <!-- Reloj (Fixed Bottom Right for Minimalist Look) -->
+    <div class="fixed bottom-10 right-10 z-50 flex flex-col items-end">
+      <div class="text-[10px] font-black tracking-[0.4em] text-gray-500 uppercase mb-1">System Time</div>
+      <div class="text-6xl font-black tabular-nums tracking-tighter text-blue-500 [text-shadow:0_0_20px_rgba(59,130,246,0.3)]">
+        {{ currentTimeString }}
       </div>
     </div>
 
     <!-- Título de Fondo sutil -->
-    <div class="fixed -left-10 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none opacity-[0.03] select-none">
-      <h1 class="text-[20vh] font-black tracking-tighter uppercase whitespace-nowrap">
-        {{ daysOfWeek.find(d => d.id === selectedDay)?.name }} MONITOR
+    <div class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-[0.02] select-none">
+      <h1 class="text-[30vw] font-black tracking-tighter uppercase whitespace-nowrap">
+        LIVE
       </h1>
     </div>
 
-    <!-- Grid de Clases -->
-    <div v-if="filteredSchedules.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-12 relative z-10">
+    <!-- Grid de Clases Actualles -->
+    <div v-if="activeSchedules.length > 0" class="flex flex-wrap justify-center gap-12 relative z-10 w-full max-w-[1800px]">
       <div 
-        v-for="item in filteredSchedules" 
+        v-for="item in activeSchedules" 
         :key="item.id"
-        class="group relative bg-[#111] border-2 rounded-[3.5rem] p-12 transition-all duration-700 hover:scale-[1.02]"
-        :style="{ borderColor: item.color + '44', boxShadow: `0 0 40px ${item.color}11` }"
+        class="group relative bg-[#111] border-2 rounded-[4rem] p-16 transition-all duration-700 hover:scale-[1.02] w-full md:w-[600px]"
+        :style="{ borderColor: item.color + '44', boxShadow: `0 0 60px ${item.color}11` }"
       >
         <!-- Glow lateral basado en el color del curso -->
-        <div class="absolute -left-1 top-10 bottom-10 w-1 rounded-full shadow-[0_0_20px_5px]" :style="{ backgroundColor: item.color, boxShadow: `0 0 20px ${item.color}` }"></div>
+        <div class="absolute -left-1 top-12 bottom-12 w-1.5 rounded-full" :style="{ backgroundColor: item.color, boxShadow: `0 0 30px ${item.color}` }"></div>
 
-        <div class="flex justify-between items-start mb-10">
+        <div class="flex justify-between items-start mb-12">
           <div class="space-y-1">
-            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Ubicación Actual</span>
-            <div class="text-4xl font-black tracking-tighter uppercase [text-shadow:0_0_10px_rgba(255,255,255,0.2)]">
+            <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Ubicación</span>
+            <div class="text-5xl font-black tracking-tighter uppercase">
               Salón <span :style="{ color: item.color }">{{ item.room }}</span>
             </div>
           </div>
-          <div class="text-right space-y-2">
-             <div>
-               <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Sección</span>
-               <div class="text-4xl font-black tracking-tighter text-white">{{ item.section }}</div>
-             </div>
-             <div v-if="item.module || item.session" class="pt-2 border-t border-white/10">
-               <span class="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500">Módulo/Sesión</span>
-               <div class="text-xl font-black tracking-tighter" :style="{ color: item.color }">
-                 M{{ item.module }} <span class="text-gray-600 mx-1">|</span> S{{ item.session }}
-               </div>
-             </div>
+          <div class="text-right">
+             <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Sección</span>
+             <div class="text-5xl font-black tracking-tighter text-white">{{ item.section }}</div>
           </div>
         </div>
 
-        <h3 class="text-6xl font-black leading-[1] mb-12 tracking-tighter uppercase break-words" :style="{ color: item.color, textShadow: `0 0 30px ${item.color}44` }">
+        <h3 class="text-8xl font-black leading-[0.9] mb-14 tracking-tighter uppercase break-words" :style="{ color: item.color, textShadow: `0 0 40px ${item.color}44` }">
           {{ item.courseName }}
         </h3>
 
-        <div class="space-y-10">
-          <div class="flex items-center gap-6">
-            <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-              <svg class="w-8 h-8 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg>
+        <div class="space-y-12">
+          <div class="flex items-center gap-8">
+            <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10">
+              <svg class="w-10 h-10 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Docente</p>
-              <p class="text-3xl font-black tracking-tight text-gray-200">{{ item.professor }}</p>
+              <p class="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-1">Docente</p>
+              <p class="text-4xl font-black tracking-tight text-gray-100">{{ item.professor }}</p>
             </div>
           </div>
 
-          <div class="flex items-center gap-6">
-            <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-              <svg class="w-8 h-8 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
+          <div class="flex items-center gap-8">
+            <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10">
+              <svg class="w-10 h-10 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
             </div>
             <div>
-              <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Duración del Bloque</p>
-              <p class="text-4xl font-black tracking-tight tabular-nums" :style="{ color: item.color }">
+              <p class="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-1">Horario de Bloque</p>
+              <p class="text-5xl font-black tracking-tight tabular-nums" :style="{ color: item.color }">
                 {{ item.startTime }} - {{ item.endTime }}
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Barra de Progreso Real Neón -->
+        <!-- Barra de Progreso -->
         <div class="mt-16">
-          <div class="flex justify-between items-end mb-4">
-             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Progreso de Sesión</span>
-             <span class="text-2xl font-black tabular-nums" :style="{ color: item.color }">{{ item.progress }}%</span>
+          <div class="flex justify-between items-end mb-6">
+             <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Progreso de Clase</span>
+             <span class="text-3xl font-black tabular-nums" :style="{ color: item.color }">{{ item.progress }}%</span>
           </div>
-          <div class="h-4 w-full bg-white/5 rounded-full overflow-hidden p-1 border border-white/5">
+          <div class="h-5 w-full bg-white/5 rounded-full overflow-hidden p-1 border border-white/5">
             <div 
-              class="h-full rounded-full transition-all duration-1000 ease-linear shadow-[0_0_15px]" 
-              :style="{ width: item.progress + '%', backgroundColor: item.color, boxShadow: `0 0 20px ${item.color}` }"
+              class="h-full rounded-full transition-all duration-1000 ease-linear" 
+              :style="{ width: item.progress + '%', backgroundColor: item.color, boxShadow: `0 0 30px ${item.color}` }"
             ></div>
           </div>
+        </div>
+
+        <!-- Tag de Sesión (Top Left Floating) -->
+        <div v-if="item.session" class="absolute -top-6 -right-6 px-8 py-4 bg-gray-900 border-2 rounded-3xl shadow-2xl" :style="{ borderColor: item.color }">
+          <span class="text-xs font-black text-gray-500 uppercase tracking-widest block">Sesión</span>
+          <span class="text-3xl font-black" :style="{ color: item.color }">{{ item.session }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Empty State Neón -->
-    <div v-else class="fixed inset-0 flex flex-col items-center justify-center text-center p-12 bg-black">
-      <div class="w-40 h-40 rounded-[3rem] border-2 border-blue-500/30 flex items-center justify-center mb-10 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
-        <div class="w-20 h-20 bg-blue-600 rounded-2xl animate-pulse shadow-[0_0_30px_#2563eb]"></div>
+    <!-- Modo Standby -->
+    <div v-else class="text-center animate-pulse">
+      <div class="w-32 h-32 bg-blue-600/20 rounded-[2.5rem] border-2 border-blue-500/30 flex items-center justify-center mx-auto mb-10">
+        <div class="w-16 h-16 bg-blue-500 rounded-2xl shadow-[0_0_50px_#3b82f6]"></div>
       </div>
-      <h3 class="text-6xl font-black text-gray-800 uppercase tracking-tighter">Standby Mode</h3>
-      <p class="text-xl text-gray-600 font-bold mt-4 tracking-widest uppercase">Esperando inicio de clases...</p>
+      <h3 class="text-7xl font-black text-gray-800 uppercase tracking-tighter">System Standby</h3>
+      <p class="text-xl text-gray-500 font-bold mt-4 tracking-[0.5em] uppercase">No hay clases activas en este momento</p>
     </div>
 
     <!-- Glitch Decorativo inferior -->
     <div class="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
-
+  </div>
 </template>
 
 <style scoped>
 .monitor-neon {
-  animation: bg-fade 2s ease-out;
-}
-
-@keyframes bg-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  background-image: radial-gradient(circle at 50% 50%, #050505 0%, #000 100%);
 }
 
 /* Tipografía de sistema */
