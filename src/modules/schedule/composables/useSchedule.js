@@ -72,8 +72,21 @@ export function useSchedule() {
 
   const activeSchedules = computed(() => {
     const nowStr = currentTimeString.value
-    const today = currentTime.value.getDay()
-    return schedules.value.filter(s => s.dayOfWeek === today && nowStr >= s.startTime && nowStr < s.endTime)
+    const now = currentTime.value
+    const today = now.getDay()
+    const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`
+
+    return schedules.value.filter(s => {
+      const timeMatch = nowStr >= s.startTime && nowStr < s.endTime
+      
+      // Si tiene fecha específica, debe ser exactamente HOY
+      if (s.date) {
+        return s.date === todayStr && timeMatch
+      }
+      
+      // Si no tiene fecha (horario perpetuo), filtrar por día de la semana
+      return s.dayOfWeek === today && timeMatch
+    })
       .map(s => ({
         ...s,
         progress: calculateProgress(s.startTime, s.endTime)

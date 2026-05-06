@@ -3,113 +3,101 @@ import { useSchedule } from '../composables/useSchedule'
 
 const { 
   activeSchedules, 
-  currentTimeString
+  rooms
 } = useSchedule()
+
+// Función para obtener la clase activa de un salón específico
+const getRoomSchedule = (roomName) => {
+  return activeSchedules.value.find(s => s.room === roomName)
+}
 </script>
 
 <template>
-  <div class="monitor-neon min-h-screen bg-black text-white p-6 md:p-10 overflow-hidden font-sans flex items-center justify-center">
+  <div class="monitor-neon min-h-screen bg-black text-white p-4 md:p-6 overflow-hidden font-sans flex flex-col">
     
-    <!-- Reloj (Fixed Bottom Right for Minimalist Look) -->
-    <div class="fixed bottom-10 right-10 z-50 flex flex-col items-end">
-      <div class="text-[10px] font-black tracking-[0.4em] text-gray-500 uppercase mb-1">System Time</div>
-      <div class="text-6xl font-black tabular-nums tracking-tighter text-blue-500 [text-shadow:0_0_20px_rgba(59,130,246,0.3)]">
-        {{ currentTimeString }}
-      </div>
-    </div>
-
-    <!-- Título de Fondo sutil -->
-    <div class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-[0.02] select-none">
-      <h1 class="text-[30vw] font-black tracking-tighter uppercase whitespace-nowrap">
-        LIVE
-      </h1>
-    </div>
-
-    <!-- Grid de Clases Actualles -->
-    <div v-if="activeSchedules.length > 0" class="flex flex-wrap justify-center gap-12 relative z-10 w-full max-w-[1800px]">
+    <!-- Grid 3x2 de Salones (Ocupa todo el espacio) -->
+    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 relative z-10">
       <div 
-        v-for="item in activeSchedules" 
-        :key="item.id"
-        class="group relative bg-[#111] border-2 rounded-[4rem] p-16 transition-all duration-700 hover:scale-[1.02] w-full md:w-[600px]"
-        :style="{ borderColor: item.color + '44', boxShadow: `0 0 60px ${item.color}11` }"
+        v-for="room in rooms" 
+        :key="room"
+        class="relative rounded-[3rem] p-8 md:p-10 border-2 transition-all duration-700 flex flex-col overflow-hidden justify-center"
+        :class="getRoomSchedule(room) ? 'bg-[#111]' : 'bg-black border-dashed border-white/5'"
+        :style="getRoomSchedule(room) ? { 
+          borderColor: getRoomSchedule(room).color + '33', 
+          boxShadow: `0 0 40px ${getRoomSchedule(room).color}08` 
+        } : {}"
       >
-        <!-- Glow lateral basado en el color del curso -->
-        <div class="absolute -left-1 top-12 bottom-12 w-1.5 rounded-full" :style="{ backgroundColor: item.color, boxShadow: `0 0 30px ${item.color}` }"></div>
-
-        <div class="flex justify-between items-start mb-12">
-          <div class="space-y-1">
-            <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Ubicación</span>
-            <div class="text-5xl font-black tracking-tighter uppercase">
-              Salón <span :style="{ color: item.color }">{{ item.room }}</span>
-            </div>
+        <!-- Header del Salón -->
+        <div class="flex justify-between items-center mb-6">
+          <div class="text-4xl font-black tracking-tighter uppercase">
+            Salón <span :class="getRoomSchedule(room) ? '' : 'text-gray-600'" :style="getRoomSchedule(room) ? { color: getRoomSchedule(room).color } : {}">
+              {{ room }}
+            </span>
           </div>
-          <div class="text-right">
-             <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Sección</span>
-             <div class="text-5xl font-black tracking-tighter text-white">{{ item.section }}</div>
+          <div v-if="getRoomSchedule(room)" class="px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400">
+            En Curso
           </div>
-        </div>
-
-        <h3 class="text-8xl font-black leading-[0.9] mb-14 tracking-tighter uppercase break-words" :style="{ color: item.color, textShadow: `0 0 40px ${item.color}44` }">
-          {{ item.courseName }}
-        </h3>
-
-        <div class="space-y-12">
-          <div class="flex items-center gap-8">
-            <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10">
-              <svg class="w-10 h-10 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg>
-            </div>
-            <div>
-              <p class="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-1">Docente</p>
-              <p class="text-4xl font-black tracking-tight text-gray-100">{{ item.professor }}</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-8">
-            <div class="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10">
-              <svg class="w-10 h-10 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
-            </div>
-            <div>
-              <p class="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-1">Horario de Bloque</p>
-              <p class="text-5xl font-black tracking-tight tabular-nums" :style="{ color: item.color }">
-                {{ item.startTime }} - {{ item.endTime }}
-              </p>
-            </div>
+          <div v-else class="px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest text-emerald-500">
+            Libre
           </div>
         </div>
 
-        <!-- Barra de Progreso -->
-        <div class="mt-16">
-          <div class="flex justify-between items-end mb-6">
-             <span class="text-[12px] font-black uppercase tracking-[0.3em] text-gray-500">Progreso de Clase</span>
-             <span class="text-3xl font-black tabular-nums" :style="{ color: item.color }">{{ item.progress }}%</span>
-          </div>
-          <div class="h-5 w-full bg-white/5 rounded-full overflow-hidden p-1 border border-white/5">
-            <div 
-              class="h-full rounded-full transition-all duration-1000 ease-linear" 
-              :style="{ width: item.progress + '%', backgroundColor: item.color, boxShadow: `0 0 30px ${item.color}` }"
-            ></div>
-          </div>
-        </div>
+        <!-- Contenido si hay clase -->
+        <template v-if="getRoomSchedule(room)">
+          <div class="flex-1 flex flex-col justify-center">
+            <h3 class="text-5xl font-black leading-[1.1] mb-8 tracking-tighter uppercase line-clamp-2" :style="{ color: getRoomSchedule(room).color }">
+              {{ getRoomSchedule(room).courseName }}
+            </h3>
 
-        <!-- Tag de Sesión (Top Left Floating) -->
-        <div v-if="item.session" class="absolute -top-6 -right-6 px-8 py-4 bg-gray-900 border-2 rounded-3xl shadow-2xl" :style="{ borderColor: item.color }">
-          <span class="text-xs font-black text-gray-500 uppercase tracking-widest block">Sesión</span>
-          <span class="text-3xl font-black" :style="{ color: item.color }">{{ item.session }}</span>
-        </div>
+            <div class="space-y-6 mb-10">
+              <div class="flex items-center gap-6">
+                <div class="text-[12px] font-black text-gray-600 uppercase tracking-[0.3em] w-20">Docente</div>
+                <div class="text-2xl font-bold text-gray-300">{{ getRoomSchedule(room).professor }}</div>
+              </div>
+              <div class="flex items-center gap-6">
+                <div class="text-[12px] font-black text-gray-600 uppercase tracking-[0.3em] w-20">Horario</div>
+                <div class="text-3xl font-black tabular-nums" :style="{ color: getRoomSchedule(room).color }">
+                  {{ getRoomSchedule(room).startTime }} - {{ getRoomSchedule(room).endTime }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer con Progreso y Sesión -->
+          <div class="mt-auto pt-8 border-t border-white/5 flex items-end justify-between gap-8">
+            <div class="flex-1">
+              <div class="flex justify-between text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
+                <span>Progreso de Clase</span>
+                <span :style="{ color: getRoomSchedule(room).color }">{{ getRoomSchedule(room).progress }}%</span>
+              </div>
+              <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                <div 
+                  class="h-full rounded-full transition-all duration-1000"
+                  :style="{ width: getRoomSchedule(room).progress + '%', backgroundColor: getRoomSchedule(room).color, boxShadow: `0 0 20px ${getRoomSchedule(room).color}` }"
+                ></div>
+              </div>
+            </div>
+            <div class="text-right bg-black/40 px-6 py-3 rounded-2xl border border-white/5">
+              <span class="text-[10px] font-black text-gray-600 uppercase block tracking-widest">Sesión</span>
+              <span class="text-3xl font-black" :style="{ color: getRoomSchedule(room).color }">S{{ getRoomSchedule(room).session }}</span>
+            </div>
+          </div>
+        </template>
+
+        <!-- Estado Disponible -->
+        <template v-else>
+          <div class="flex-1 flex flex-col items-center justify-center text-center opacity-20">
+            <div class="w-20 h-20 border-2 border-gray-600 rounded-3xl flex items-center justify-center mb-6">
+              <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            </div>
+            <p class="text-sm font-black uppercase tracking-[0.5em] text-gray-400">Ambiente Disponible</p>
+          </div>
+        </template>
       </div>
     </div>
 
-    <!-- Modo Standby -->
-    <div v-else class="text-center animate-pulse">
-      <div class="w-32 h-32 bg-blue-600/20 rounded-[2.5rem] border-2 border-blue-500/30 flex items-center justify-center mx-auto mb-10">
-        <div class="w-16 h-16 bg-blue-500 rounded-2xl shadow-[0_0_50px_#3b82f6]"></div>
-      </div>
-      <h3 class="text-7xl font-black text-gray-800 uppercase tracking-tighter">System Standby</h3>
-      <p class="text-xl text-gray-500 font-bold mt-4 tracking-[0.5em] uppercase">No hay clases activas en este momento</p>
-    </div>
-
-    <!-- Glitch Decorativo inferior -->
-    <div class="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+    <!-- Sutil decoración inferior -->
+    <div class="fixed bottom-0 left-0 right-0 h-0.5 bg-blue-500/10"></div>
   </div>
 </template>
 
