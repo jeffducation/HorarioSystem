@@ -1,32 +1,56 @@
 <script setup>
+import { computed } from 'vue'
 import { useSchedule } from '../composables/useSchedule'
 
 const { 
   activeSchedules, 
-  currentTimeString 
+  selectedDay,
+  schedules
 } = useSchedule()
+
+const daysOfWeek = [
+  { id: 1, name: 'Lunes' }, { id: 2, name: 'Martes' }, { id: 3, name: 'Miércoles' },
+  { id: 4, name: 'Jueves' }, { id: 5, name: 'Viernes' }, { id: 6, name: 'Sábado' }, { id: 0, name: 'Domingo' }
+]
+
+const filteredSchedules = computed(() => {
+  const today = new Date().getDay()
+  if (selectedDay.value === today) return activeSchedules.value
+  
+  // Si no es hoy, mostrar todos los del día seleccionado sin filtro de hora (modo consulta)
+  return schedules.value.filter(s => s.dayOfWeek === selectedDay.value)
+})
 </script>
 
 <template>
   <div class="monitor-neon min-h-screen bg-black text-white p-6 md:p-10 overflow-hidden font-sans">
     
-    <!-- Reloj Digital Neón (Top Right) -->
-    <div class="fixed top-8 right-10 z-50 flex flex-col items-end">
-      <div class="text-[10px] font-black tracking-[0.4em] text-gray-500 uppercase mb-1">System Time</div>
-      <div class="text-7xl font-black tabular-nums tracking-tighter text-blue-500 [text-shadow:0_0_20px_rgba(59,130,246,0.5)]">
-        {{ currentTimeString }}
+
+
+      <!-- Selector de Día en Monitor -->
+      <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md">
+        <button 
+          v-for="day in daysOfWeek" :key="day.id"
+          @click="selectedDay = day.id"
+          class="px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
+          :class="selectedDay === day.id ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'text-gray-500 hover:text-gray-300'"
+        >
+          {{ day.name.substring(0,2) }}
+        </button>
       </div>
     </div>
 
     <!-- Título de Fondo sutil -->
     <div class="fixed -left-10 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none opacity-[0.03] select-none">
-      <h1 class="text-[20vh] font-black tracking-tighter uppercase whitespace-nowrap">SYSTEMATIC LIVE MONITOR</h1>
+      <h1 class="text-[20vh] font-black tracking-tighter uppercase whitespace-nowrap">
+        {{ daysOfWeek.find(d => d.id === selectedDay)?.name }} MONITOR
+      </h1>
     </div>
 
-    <!-- Grid de Clases Activas -->
-    <div v-if="activeSchedules.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12 relative z-10">
+    <!-- Grid de Clases -->
+    <div v-if="filteredSchedules.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-12 relative z-10">
       <div 
-        v-for="item in activeSchedules" 
+        v-for="item in filteredSchedules" 
         :key="item.id"
         class="group relative bg-[#111] border-2 rounded-[3.5rem] p-12 transition-all duration-700 hover:scale-[1.02]"
         :style="{ borderColor: item.color + '44', boxShadow: `0 0 40px ${item.color}11` }"
@@ -41,9 +65,17 @@ const {
               Salón <span :style="{ color: item.color }">{{ item.room }}</span>
             </div>
           </div>
-          <div class="text-right">
-             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Sección</span>
-             <div class="text-6xl font-black tracking-tighter text-white">{{ item.section }}</div>
+          <div class="text-right space-y-2">
+             <div>
+               <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Sección</span>
+               <div class="text-4xl font-black tracking-tighter text-white">{{ item.section }}</div>
+             </div>
+             <div v-if="item.module || item.session" class="pt-2 border-t border-white/10">
+               <span class="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500">Módulo/Sesión</span>
+               <div class="text-xl font-black tracking-tighter" :style="{ color: item.color }">
+                 M{{ item.module }} <span class="text-gray-600 mx-1">|</span> S{{ item.session }}
+               </div>
+             </div>
           </div>
         </div>
 
@@ -102,7 +134,7 @@ const {
 
     <!-- Glitch Decorativo inferior -->
     <div class="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
-  </div>
+
 </template>
 
 <style scoped>

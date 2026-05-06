@@ -11,6 +11,7 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "@tailwindcss/postcss": "^4.2.4",
     "pinia": "^3.0.4",
     "postcss": "^8.5.14",

@@ -1,12 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useSchedule } from '../composables/useSchedule'
 import ScheduleGrid from '../components/ScheduleGrid.vue'
 import ScheduleFormModal from '../components/ScheduleFormModal.vue'
 
 const { 
   schedules, rooms, selectedDay, professors, courses, timelinePosition,
-  upsertSchedule, deleteSchedule, addProfessor, updateProfessor, deleteProfessor, 
+  upsertSchedule, deleteSchedule, deleteSchedulesBySection, 
+  addProfessor, updateProfessor, deleteProfessor, 
   addCourse, updateCourse, deleteCourse 
 } = useSchedule()
 
@@ -14,6 +15,29 @@ const daysOfWeek = [
   { id: 1, name: 'Lunes' }, { id: 2, name: 'Martes' }, { id: 3, name: 'Miércoles' },
   { id: 4, name: 'Jueves' }, { id: 5, name: 'Viernes' }, { id: 6, name: 'Sábado' }, { id: 0, name: 'Domingo' }
 ]
+
+const getTodayStr = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`
+}
+
+const selectedDate = ref(getTodayStr())
+
+// Sincronizar selectedDay con la fecha seleccionada
+watch(selectedDate, (newDate) => {
+  if (!newDate) return
+  const date = new Date(newDate + 'T00:00:00')
+  selectedDay.value = date.getDay()
+}, { immediate: true })
+
+const selectDayAndDate = (dayId) => {
+  const current = new Date(selectedDate.value + 'T00:00:00')
+  const currentDay = current.getDay() === 0 ? 6 : current.getDay() - 1
+  const targetDay = dayId === 0 ? 6 : dayId - 1
+  const diff = targetDay - currentDay
+  current.setDate(current.getDate() + diff)
+  selectedDate.value = `${current.getFullYear()}-${(current.getMonth() + 1).toString().padStart(2, '0')}-${current.getDate().toString().padStart(2, '0')}`
+}
 
 // Modal State
 const showModal = ref(false)
@@ -42,6 +66,13 @@ const activeTab = ref('schedule')
 const editingProfId = ref(null)
 const editingCourseId = ref(null)
 const editValue = ref('')
+const isFullScreen = ref(false)
+const viewMode = ref('daily') // 'daily' or 'weekly'
+const activeRoom = ref('201')
+
+const toggleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+}
 
 const startEditProf = (prof) => {
   editingProfId.value = prof.id
@@ -101,6 +132,28 @@ const handleAddCourse = () => {
     newCourse.value = ''
   }
 }
+
+// Modern Delete Confirmation State
+const showDeleteConfirm = ref(false)
+const itemToDelete = ref(null)
+
+const confirmDeleteSchedule = (item) => {
+  itemToDelete.value = item
+  showDeleteConfirm.value = true
+}
+
+const executeDelete = async (mode) => {
+  if (!itemToDelete.value) return
+  
+  if (mode === 'single') {
+    await deleteSchedule(itemToDelete.value.id)
+  } else if (mode === 'section') {
+    await deleteSchedulesBySection(itemToDelete.value.courseId, itemToDelete.value.section)
+  }
+  
+  showDeleteConfirm.value = false
+  itemToDelete.value = null
+}
 </script>
 
 <template>
@@ -121,6 +174,24 @@ const handleAddCourse = () => {
       >
         👥 Docentes y Cursos
       </button>
+
+      <!-- Selector de Vista -->
+      <div class="ml-auto flex bg-gray-50 p-1 rounded-xl">
+        <button 
+          @click="viewMode = 'daily'"
+          class="px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
+          :class="viewMode === 'daily' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
+        >
+          Salones
+        </button>
+        <button 
+          @click="viewMode = 'weekly'"
+          class="px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
+          :class="viewMode === 'weekly' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
+        >
+          Semana
+        </button>
+      </div>
     </div>
 
     <!-- VISTA 1: PLANIFICACIÓN -->
@@ -131,23 +202,62 @@ const handleAddCourse = () => {
           <p class="text-gray-500 font-medium text-sm mt-1 tracking-tight">Selecciona un salón y hora para iniciar la programación.</p>
         </div>
 
-        <div class="flex bg-gray-100 p-1.5 rounded-2xl overflow-x-auto shadow-inner">
+        <div class="flex flex-col md:flex-row items-center gap-4">
+          <!-- Selector de Fecha / Avanzar en el tiempo -->
+          <div class="flex items-center gap-2 bg-white border-2 border-gray-100 p-1.5 rounded-2xl shadow-sm">
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() - 1); selectedDate = d.toISOString().split('T')[0]" class="p-2 hover:bg-gray-50 rounded-xl transition-all">◀</button>
+            <input type="date" v-model="selectedDate" class="bg-transparent border-none outline-none font-black text-xs uppercase tracking-widest text-blue-600 px-2" />
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() + 1); selectedDate = d.toISOString().split('T')[0]" class="p-2 hover:bg-gray-50 rounded-xl transition-all">▶</button>
+          </div>
+
+          <div class="flex bg-gray-100 p-1.5 rounded-2xl overflow-x-auto shadow-inner">
+            <button 
+              v-for="day in daysOfWeek" :key="day.id"
+              @click="selectDayAndDate(day.id)"
+              class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap"
+              :class="selectedDay === day.id ? 'bg-white text-blue-600 shadow-lg' : 'text-gray-500'"
+            >
+              {{ day.name }}
+            </button>
+          </div>
+
+          <!-- Selector de Salón para Vista Semanal -->
+          <div v-if="viewMode === 'weekly'" class="flex bg-blue-50 p-1.5 rounded-2xl shadow-inner">
+            <button 
+              v-for="room in rooms" :key="room"
+              @click="activeRoom = room"
+              class="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all"
+              :class="activeRoom === room ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-400'"
+            >
+              R{{ room }}
+            </button>
+          </div>
+
           <button 
-            v-for="day in daysOfWeek" :key="day.id"
-            @click="selectedDay = day.id"
-            class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap"
-            :class="selectedDay === day.id ? 'bg-white text-blue-600 shadow-lg' : 'text-gray-500'"
+            @click="toggleFullScreen"
+            class="hidden md:flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg active:scale-95"
           >
-            {{ day.name }}
+            <span v-if="!isFullScreen">⛶ Pantalla Completa</span>
+            <span v-else>✕ Salir</span>
           </button>
         </div>
       </header>
 
-      <ScheduleGrid 
-        :timeSlots="['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00']"
-        :rooms="rooms" :schedules="schedules" :selectedDay="selectedDay" :timelinePosition="timelinePosition"
-        @cellClick="openCreateModal" @editClick="openEditModal" @delete="deleteSchedule"
-      />
+      <div :class="{ 'full-screen-wrapper': isFullScreen }">
+        <div v-if="isFullScreen" class="mb-6 flex justify-between items-center">
+           <h2 class="text-2xl font-black text-gray-900 tracking-tighter">Vista Panorámica - {{ daysOfWeek.find(d => d.id === selectedDay)?.name }}</h2>
+           <button @click="toggleFullScreen" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-all">
+             Cerrar Vista
+           </button>
+        </div>
+        <ScheduleGrid 
+          :timeSlots="['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00']"
+          :rooms="rooms" :schedules="schedules" :selectedDay="selectedDay" :selectedDate="selectedDate" :timelinePosition="timelinePosition"
+          :viewMode="viewMode" :activeRoom="activeRoom"
+          @cellClick="openCreateModal" @editClick="openEditModal" @delete="confirmDeleteSchedule" @move="upsertSchedule"
+          :class="{ 'full-screen-grid': isFullScreen }"
+        />
+      </div>
     </div>
 
     <!-- VISTA 2: GESTIÓN DE ENTIDADES -->
@@ -231,12 +341,81 @@ const handleAddCourse = () => {
       :professors="professors" :courses="courses" :rooms="rooms"
       @close="showModal = false" @save="upsertSchedule"
     />
+
+    <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN MODERNO -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showDeleteConfirm = false"></div>
+      
+      <div class="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300">
+        <div class="p-8 text-center">
+          <div class="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl">
+            🗑️
+          </div>
+          
+          <h3 class="text-2xl font-black text-gray-900 tracking-tighter mb-2">Eliminar Horario</h3>
+          <p class="text-gray-500 font-medium mb-8">
+            Estás por eliminar el horario de <span class="font-black text-gray-900">{{ itemToDelete?.courseName }}</span>. 
+            ¿Cómo deseas proceder?
+          </p>
+
+          <div class="space-y-3">
+            <button 
+              @click="executeDelete('single')"
+              class="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+            >
+              Eliminar solo este bloque
+            </button>
+            
+            <button 
+              @click="executeDelete('section')"
+              class="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg active:scale-95"
+            >
+              Eliminar toda la SECCIÓN {{ itemToDelete?.section }}
+            </button>
+            
+            <button 
+              @click="showDeleteConfirm = false"
+              class="w-full py-4 text-gray-400 font-black text-xs uppercase tracking-widest hover:text-gray-600 transition-all"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 text-center">
+          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Esta acción no se puede deshacer</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+.full-screen-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: #f8fafc;
+  padding: 2rem;
+  overflow-y: auto;
+  animation: fullScreenIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fullScreenIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+:deep(.full-screen-grid .grid-scroll-container) {
+  max-height: none !important;
+  height: calc(100vh - 180px) !important;
+}
 </style>

@@ -37,3 +37,12 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# Secrets and Internal
+.env
+.env.local
+.env.*.local
+SKILLS/
+GEMINI.md
+*.md
+!README.md
