@@ -21,12 +21,12 @@ defineProps({
           Clases en Curso
         </h3>
         <p class="text-[10px] text-blue-300 font-bold uppercase tracking-widest mt-0.5">
-          Monitoreo en Tiempo Real
+          Monitor de Ambientes
         </p>
       </div>
       <div class="text-right">
         <div class="text-2xl font-black tabular-nums tracking-tighter">{{ currentTimeString }}</div>
-        <div class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Hora Local</div>
+        <div class="text-[9px] font-black text-blue-300 uppercase tracking-widest">Hora Local</div>
       </div>
     </div>
 
@@ -44,9 +44,14 @@ defineProps({
           </div>
 
           <div class="mb-4">
-            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase tracking-widest">
-              Sección {{ item.section }}
-            </span>
+            <div class="flex justify-between items-start">
+              <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase tracking-widest">
+                Sección {{ item.section }}
+              </span>
+              <span v-if="item.isNextClass" class="text-[9px] font-black text-emerald-500 uppercase tracking-tighter bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                Siguiente
+              </span>
+            </div>
             <h4 class="text-xl font-black text-gray-900 mt-2 leading-tight">{{ item.courseName }}</h4>
           </div>
 
@@ -74,9 +79,19 @@ defineProps({
             </div>
           </div>
 
-          <!-- Barra de progreso visual (decorativa) -->
+          <!-- Barra de progreso visual -->
           <div class="mt-6 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full bg-blue-600 rounded-full animate-pulse" style="width: 65%"></div>
+            <div 
+              class="h-full bg-blue-600 rounded-full transition-all duration-1000" 
+              :class="{ 'animate-pulse bg-emerald-400': item.isNextClass }"
+              :style="{ width: (item.isNextClass ? 100 : item.progress) + '%' }"
+            ></div>
+          </div>
+          <div v-if="!item.isNextClass" class="mt-2 text-[8px] font-black text-right text-gray-400 uppercase tracking-widest">
+            Progreso: {{ item.progress }}%
+          </div>
+          <div v-else class="mt-2 text-[8px] font-black text-right text-emerald-500 uppercase tracking-widest">
+            Próximamente
           </div>
         </div>
       </div>

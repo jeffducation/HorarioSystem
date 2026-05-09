@@ -87,18 +87,18 @@ const handleSave = () => {
   <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
     <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100">
       <!-- Header -->
-      <div class="p-8 bg-gray-900 text-white flex justify-between items-center">
+      <div class="p-6 md:p-8 bg-gray-900 text-white flex justify-between items-center">
         <div>
-          <h3 class="text-2xl font-black tracking-tighter uppercase">{{ editItem ? 'Editar' : 'Programar' }} Clase</h3>
-          <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Configuración de Horario Systematic</p>
+          <h3 class="text-xl md:text-2xl font-black tracking-tighter uppercase">{{ editItem ? 'Editar' : 'Programar' }} Clase</h3>
+          <p class="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Configuración de Horario Systematic</p>
         </div>
-        <button @click="$emit('close')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+        <button @click="$emit('close')" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
           ✕
         </button>
       </div>
 
       <!-- Formulario -->
-      <div class="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div class="p-6 md:p-8 space-y-4 md:space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
         <div class="grid grid-cols-2 gap-4">
           <!-- Curso -->
           <div class="col-span-2">
@@ -202,11 +202,11 @@ const handleSave = () => {
       </div>
 
       <!-- Acciones -->
-      <div class="p-8 bg-gray-50 flex gap-4">
-        <button @click="$emit('close')" type="button" class="flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">
+      <div class="p-6 md:p-8 bg-gray-50 flex gap-4">
+        <button @click="$emit('close')" type="button" class="flex-1 py-3 md:py-4 text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">
           Cancelar
         </button>
-        <button @click="handleSave" type="button" class="flex-1 py-4 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all">
+        <button @click="handleSave" type="button" class="flex-1 py-3 md:py-4 bg-blue-600 text-white text-[10px] md:text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all">
           {{ editItem ? 'Actualizar' : 'Guardar Horario' }}
         </button>
       </div>

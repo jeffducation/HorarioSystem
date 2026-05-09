@@ -247,10 +247,14 @@ const showTimeline = () => {
   overflow: auto;
   max-height: 750px;
   position: relative;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .grid-content {
   min-width: 1200px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Panoramic adjustments */
@@ -270,10 +274,28 @@ const showTimeline = () => {
 
 .row-container {
   min-height: var(--row-height);
+  display: grid;
 }
 
 .full-screen-grid .row-container {
   min-height: var(--row-height);
+}
+
+/* Time Column Sticky Logic */
+.time-column {
+  position: sticky;
+  left: 0;
+  z-index: 50;
+  background: white;
+  border-right: 1px solid #f1f5f9;
+  box-shadow: 10px 0 15px -10px rgba(0,0,0,0.05);
+}
+
+.header-cell:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 70;
+  background: #111827; /* gray-900 */
 }
 
 /* Ensure sticky header works */
@@ -282,4 +304,7 @@ const showTimeline = () => {
   top: 0;
   z-index: 60;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>

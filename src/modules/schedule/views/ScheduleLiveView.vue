@@ -34,8 +34,12 @@ const getRoomSchedule = (roomName) => {
               {{ room }}
             </span>
           </div>
-          <div v-if="getRoomSchedule(room)" class="px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            En Curso
+          <div v-if="getRoomSchedule(room)" class="px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+            :class="getRoomSchedule(room).isNextClass 
+              ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' 
+              : 'bg-white/5 border-white/10 text-gray-400'"
+          >
+            {{ getRoomSchedule(room).isNextClass ? 'Siguiente Clase' : 'En Curso' }}
           </div>
           <div v-else class="px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest text-emerald-500">
             Libre
@@ -66,16 +70,24 @@ const getRoomSchedule = (roomName) => {
           <!-- Footer con Progreso y Sesión -->
           <div class="mt-auto pt-8 border-t border-white/5 flex items-end justify-between gap-8">
             <div class="flex-1">
-              <div class="flex justify-between text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
-                <span>Progreso de Clase</span>
-                <span :style="{ color: getRoomSchedule(room).color }">{{ getRoomSchedule(room).progress }}%</span>
-              </div>
-              <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
-                <div 
-                  class="h-full rounded-full transition-all duration-1000"
-                  :style="{ width: getRoomSchedule(room).progress + '%', backgroundColor: getRoomSchedule(room).color, boxShadow: `0 0 20px ${getRoomSchedule(room).color}` }"
-                ></div>
-              </div>
+              <template v-if="!getRoomSchedule(room).isNextClass">
+                <div class="flex justify-between text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
+                  <span>Progreso de Clase</span>
+                  <span :style="{ color: getRoomSchedule(room).color }">{{ getRoomSchedule(room).progress }}%</span>
+                </div>
+                <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div 
+                    class="h-full rounded-full transition-all duration-1000"
+                    :style="{ width: getRoomSchedule(room).progress + '%', backgroundColor: getRoomSchedule(room).color, boxShadow: `0 0 20px ${getRoomSchedule(room).color}` }"
+                  ></div>
+                </div>
+              </template>
+              <template v-else>
+                <div class="flex items-center gap-4 text-blue-500">
+                  <div class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+                  <span class="text-[11px] font-black uppercase tracking-[0.2em]">Preparando ambiente...</span>
+                </div>
+              </template>
             </div>
             <div class="text-right bg-black/40 px-6 py-3 rounded-2xl border border-white/5">
               <span class="text-[10px] font-black text-gray-600 uppercase block tracking-widest">Sesión</span>

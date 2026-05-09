@@ -157,36 +157,38 @@ const executeDelete = async (mode) => {
 </script>
 
 <template>
-  <div class="p-6 max-w-[1700px] mx-auto space-y-8 animate-in fade-in duration-700">
-    <!-- Navbar de Tabs -->
-    <div class="flex gap-4 border-b border-gray-200 pb-1">
-      <button 
-        @click="activeTab = 'schedule'"
-        class="px-6 py-3 text-xs font-black uppercase tracking-widest transition-all border-b-2"
-        :class="activeTab === 'schedule' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400 hover:text-gray-600'"
-      >
-        📅 Horarios
-      </button>
-      <button 
-        @click="activeTab = 'entities'"
-        class="px-6 py-3 text-xs font-black uppercase tracking-widest transition-all border-b-2"
-        :class="activeTab === 'entities' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400 hover:text-gray-600'"
-      >
-        👥 Docentes y Cursos
-      </button>
+  <div class="p-4 sm:p-6 md:p-8 max-w-[1700px] mx-auto space-y-6 md:space-y-8 animate-in fade-in duration-700">
+    <!-- Navbar de Tabs Modernizado -->
+    <div class="flex flex-col sm:flex-row gap-4 border-b border-gray-100 pb-1 items-center">
+      <div class="flex w-full sm:w-auto bg-gray-100/50 p-1 rounded-2xl">
+        <button 
+          @click="activeTab = 'schedule'"
+          class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2"
+          :class="activeTab === 'schedule' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+        >
+          <span>📅</span> Horarios
+        </button>
+        <button 
+          @click="activeTab = 'entities'"
+          class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2"
+          :class="activeTab === 'entities' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+        >
+          <span>👥</span> Gestión
+        </button>
+      </div>
 
-      <!-- Selector de Vista -->
-      <div class="ml-auto flex bg-gray-50 p-1 rounded-xl">
+      <!-- Selector de Vista (Visible solo en Horarios) -->
+      <div v-if="activeTab === 'schedule'" class="flex bg-gray-100/50 p-1 rounded-xl w-full sm:w-auto sm:ml-auto">
         <button 
           @click="viewMode = 'daily'"
-          class="px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
+          class="flex-1 sm:px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
           :class="viewMode === 'daily' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
         >
           Salones
         </button>
         <button 
           @click="viewMode = 'weekly'"
-          class="px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
+          class="flex-1 sm:px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
           :class="viewMode === 'weekly' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
         >
           Semana
@@ -195,42 +197,17 @@ const executeDelete = async (mode) => {
     </div>
 
     <!-- VISTA 1: PLANIFICACIÓN -->
-    <div v-if="activeTab === 'schedule'" class="space-y-8 animate-in slide-in-from-left duration-500">
-      <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 class="text-4xl font-black text-gray-900 tracking-tighter italic">Planificador <span class="text-blue-600">Pro</span></h1>
-          <p class="text-gray-500 font-medium text-sm mt-1 tracking-tight">Selecciona un salón y hora para iniciar la programación.</p>
-        </div>
-
-        <div class="flex flex-col md:flex-row items-center gap-4">
-          <!-- Selector de Fecha / Avanzar en el tiempo -->
-          <div class="flex items-center gap-2 bg-white border-2 border-gray-100 p-1.5 rounded-2xl shadow-sm">
-            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() - 1); selectedDate = d.toISOString().split('T')[0]" class="p-2 hover:bg-gray-50 rounded-xl transition-all">◀</button>
-            <input type="date" v-model="selectedDate" class="bg-transparent border-none outline-none font-black text-xs uppercase tracking-widest text-blue-600 px-2" />
-            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() + 1); selectedDate = d.toISOString().split('T')[0]" class="p-2 hover:bg-gray-50 rounded-xl transition-all">▶</button>
-          </div>
-
-          <div class="flex bg-gray-100 p-1.5 rounded-2xl overflow-x-auto shadow-inner">
-            <button 
-              v-for="day in daysOfWeek" :key="day.id"
-              @click="selectDayAndDate(day.id)"
-              class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap"
-              :class="selectedDay === day.id ? 'bg-white text-blue-600 shadow-lg' : 'text-gray-500'"
-            >
-              {{ day.name }}
-            </button>
-          </div>
-
-          <!-- Selector de Salón para Vista Semanal -->
-          <div v-if="viewMode === 'weekly'" class="flex bg-blue-50 p-1.5 rounded-2xl shadow-inner">
-            <button 
-              v-for="room in rooms" :key="room"
-              @click="activeRoom = room"
-              class="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all"
-              :class="activeRoom === room ? 'bg-white text-blue-600 shadow-lg' : 'text-blue-400'"
-            >
-              R{{ room }}
-            </button>
+    <div v-if="activeTab === 'schedule'" class="space-y-6 md:space-y-8 animate-in slide-in-from-left duration-500">
+      <header class="flex flex-col gap-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
+              Planificador <span class="text-blue-600">Pro</span>
+            </h1>
+            <p class="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-2 flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Gestión de horarios en tiempo real
+            </p>
           </div>
 
           <button 
@@ -240,6 +217,42 @@ const executeDelete = async (mode) => {
             <span v-if="!isFullScreen">⛶ Pantalla Completa</span>
             <span v-else>✕ Salir</span>
           </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] items-center gap-4 bg-white/50 backdrop-blur-md p-2 rounded-[2rem] border border-gray-100 shadow-sm">
+          <!-- Selector de Fecha Compacto -->
+          <div class="flex items-center justify-between gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() - 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all shadow-sm">◀</button>
+            <div class="relative flex flex-col items-center px-4">
+              <span class="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Fecha seleccionada</span>
+              <input type="date" v-model="selectedDate" class="bg-transparent border-none outline-none font-black text-xs uppercase tracking-widest text-blue-600 cursor-pointer" />
+            </div>
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() + 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all shadow-sm">▶</button>
+          </div>
+
+          <!-- Selector de Días Horizontal -->
+          <div class="flex gap-2 overflow-x-auto pb-1 lg:pb-0 no-scrollbar snap-x w-full">
+            <button 
+              v-for="day in daysOfWeek" :key="day.id"
+              @click="selectDayAndDate(day.id)"
+              class="flex-none min-w-[90px] lg:min-w-0 lg:flex-1 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all snap-center shadow-sm"
+              :class="selectedDay === day.id ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-100'"
+            >
+              {{ day.name }}
+            </button>
+          </div>
+
+          <!-- Selector de Salón para Vista Semanal (Compacto) -->
+          <div v-if="viewMode === 'weekly'" class="flex bg-blue-50/50 p-1 rounded-xl border border-blue-100 overflow-x-auto no-scrollbar">
+            <button 
+              v-for="room in rooms" :key="room"
+              @click="activeRoom = room"
+              class="px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all whitespace-nowrap"
+              :class="activeRoom === room ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-300'"
+            >
+              R{{ room }}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -261,34 +274,34 @@ const executeDelete = async (mode) => {
     </div>
 
     <!-- VISTA 2: GESTIÓN DE ENTIDADES -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-10 animate-in slide-in-from-right duration-500">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 animate-in slide-in-from-right duration-500">
       <!-- Profesores -->
-      <section class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
+      <section class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
+          <h3 class="text-lg md:text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
             <span class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">👨‍🏫</span>
             Docentes
           </h3>
-          <span class="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-black text-gray-400 uppercase">{{ professors.length }} Total</span>
+          <span class="px-3 py-1 bg-gray-100 rounded-full text-[9px] md:text-[10px] font-black text-gray-400 uppercase">{{ professors.length }} Total</span>
         </div>
 
         <div class="flex gap-2 mb-4">
-          <input v-model="newProf" type="text" placeholder="Nuevo Profesor..." class="flex-1 px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-600 outline-none font-bold" @keyup.enter="handleAddProfessor" />
-          <button @click="handleAddProfessor" class="px-6 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg hover:bg-blue-700 transition-all">+</button>
+          <input v-model="newProf" type="text" placeholder="Nuevo Profesor..." class="flex-1 px-4 md:px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-600 outline-none font-bold text-sm" @keyup.enter="handleAddProfessor" />
+          <button @click="handleAddProfessor" class="px-4 md:px-6 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg hover:bg-blue-700 transition-all">+</button>
         </div>
 
         <div class="mb-4 relative">
-          <input v-model="searchProf" type="text" placeholder="🔍 Buscar docente..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-100 outline-none" />
+          <input v-model="searchProf" type="text" placeholder="🔍 Buscar docente..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-blue-100 outline-none" />
         </div>
 
-        <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[400px]">
-          <div v-for="p in filteredProfessors" :key="p.id" class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-all">
+        <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[300px] md:min-h-[400px]">
+          <div v-for="p in filteredProfessors" :key="p.id" class="flex justify-between items-center p-3 md:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-all">
             <div v-if="editingProfId === p.id" class="flex-1 flex gap-2">
               <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-blue-400 rounded-lg outline-none font-bold" @keyup.enter="saveEditProf(p.id)" />
               <button @click="saveEditProf(p.id)" class="text-blue-600 font-black text-xs uppercase">Ok</button>
             </div>
             <div v-else class="flex-1 flex justify-between items-center">
-              <span class="font-bold text-gray-700">{{ p.name }}</span>
+              <span class="font-bold text-gray-700 text-sm">{{ p.name }}</span>
               <div class="flex gap-3 ml-4">
                 <button @click="startEditProf(p)" class="text-gray-400 hover:text-blue-600 transition-colors">✏️</button>
                 <button @click="confirmDeleteProf(p.id)" class="text-gray-400 hover:text-red-600 transition-colors">🗑️</button>
@@ -299,32 +312,32 @@ const executeDelete = async (mode) => {
       </section>
 
       <!-- Cursos -->
-      <section class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
+      <section class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
+          <h3 class="text-lg md:text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
             <span class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">📚</span>
             Cursos
           </h3>
-          <span class="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-black text-gray-400 uppercase">{{ courses.length }} Total</span>
+          <span class="px-3 py-1 bg-gray-100 rounded-full text-[9px] md:text-[10px] font-black text-gray-400 uppercase">{{ courses.length }} Total</span>
         </div>
 
         <div class="flex gap-2 mb-4">
-          <input v-model="newCourse" type="text" placeholder="Nuevo Curso..." class="flex-1 px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-emerald-600 outline-none font-bold" @keyup.enter="handleAddCourse" />
-          <button @click="handleAddCourse" class="px-6 py-3 bg-emerald-600 text-white font-black rounded-xl shadow-lg hover:bg-emerald-700 transition-all">+</button>
+          <input v-model="newCourse" type="text" placeholder="Nuevo Curso..." class="flex-1 px-4 md:px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-emerald-600 outline-none font-bold text-sm" @keyup.enter="handleAddCourse" />
+          <button @click="handleAddCourse" class="px-4 md:px-6 py-3 bg-emerald-600 text-white font-black rounded-xl shadow-lg hover:bg-emerald-700 transition-all">+</button>
         </div>
 
         <div class="mb-4 relative">
-          <input v-model="searchCourse" type="text" placeholder="🔍 Buscar curso..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-100 outline-none" />
+          <input v-model="searchCourse" type="text" placeholder="🔍 Buscar curso..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-100 outline-none" />
         </div>
 
-        <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[400px]">
-          <div v-for="c in filteredCourses" :key="c.id" class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-emerald-200 transition-all">
+        <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[300px] md:min-h-[400px]">
+          <div v-for="c in filteredCourses" :key="c.id" class="flex justify-between items-center p-3 md:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-emerald-200 transition-all">
             <div v-if="editingCourseId === c.id" class="flex-1 flex gap-2">
               <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-emerald-400 rounded-lg outline-none font-bold" @keyup.enter="saveEditCourse(c.id)" />
               <button @click="saveEditCourse(c.id)" class="text-emerald-600 font-black text-xs uppercase">Ok</button>
             </div>
             <div v-else class="flex-1 flex justify-between items-center">
-              <span class="font-bold text-gray-700">{{ c.name }}</span>
+              <span class="font-bold text-gray-700 text-sm">{{ c.name }}</span>
               <div class="flex gap-3 ml-4">
                 <button @click="startEditCourse(c)" class="text-gray-400 hover:text-emerald-600 transition-colors">✏️</button>
                 <button @click="confirmDeleteCourse(c.id)" class="text-gray-400 hover:text-red-600 transition-colors">🗑️</button>
@@ -396,6 +409,9 @@ const executeDelete = async (mode) => {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 .full-screen-wrapper {
   position: fixed;
   top: 0;
@@ -404,9 +420,15 @@ const executeDelete = async (mode) => {
   height: 100vh;
   z-index: 1000;
   background: #f8fafc;
-  padding: 2rem;
+  padding: 1rem;
   overflow-y: auto;
   animation: fullScreenIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 768px) {
+  .full-screen-wrapper {
+    padding: 2rem;
+  }
 }
 
 @keyframes fullScreenIn {
@@ -416,6 +438,12 @@ const executeDelete = async (mode) => {
 
 :deep(.full-screen-grid .grid-scroll-container) {
   max-height: none !important;
-  height: calc(100vh - 180px) !important;
+  height: calc(100vh - 120px) !important;
+}
+
+@media (max-width: 768px) {
+  :deep(.grid-content) {
+    min-width: 800px !important;
+  }
 }
 </style>

@@ -76,21 +76,39 @@ export function useSchedule() {
     const today = now.getDay()
     const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`
 
-    return schedules.value.filter(s => {
-      const timeMatch = nowStr >= s.startTime && nowStr < s.endTime
+    const results = []
+    
+    rooms.value.forEach(room => {
+      // Filtrar todos los horarios de este salón para hoy
+      const todaySchedules = schedules.value.filter(s => {
+        const roomMatch = s.room === room
+        const dateMatch = s.date ? s.date === todayStr : s.dayOfWeek === today
+        return roomMatch && dateMatch
+      }).sort((a, b) => a.startTime.localeCompare(b.startTime))
+
+      // Buscar si hay uno activo
+      const active = todaySchedules.find(s => nowStr >= s.startTime && nowStr < s.endTime)
       
-      // Si tiene fecha específica, debe ser exactamente HOY
-      if (s.date) {
-        return s.date === todayStr && timeMatch
+      if (active) {
+        results.push({
+          ...active,
+          isNextClass: false,
+          progress: calculateProgress(active.startTime, active.endTime)
+        })
+      } else {
+        // Buscar el siguiente
+        const next = todaySchedules.find(s => s.startTime > nowStr)
+        if (next) {
+          results.push({
+            ...next,
+            isNextClass: true,
+            progress: 0
+          })
+        }
       }
-      
-      // Si no tiene fecha (horario perpetuo), filtrar por día de la semana
-      return s.dayOfWeek === today && timeMatch
     })
-      .map(s => ({
-        ...s,
-        progress: calculateProgress(s.startTime, s.endTime)
-      }))
+
+    return results
   })
 
   const timelinePosition = computed(() => {
