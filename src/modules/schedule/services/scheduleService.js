@@ -37,6 +37,24 @@ export const scheduleService = {
     if (error) throw error
   },
 
+  // --- SALONES ---
+  async getRooms() {
+    const { data, error } = await supabase.from('rooms').select('*').order('name')
+    if (error) throw error
+    return data
+  },
+
+  async upsertRoom(room) {
+    const { data, error } = await supabase.from('rooms').upsert(room).select().single()
+    if (error) throw error
+    return data
+  },
+
+  async deleteRoom(id) {
+    const { error } = await supabase.from('rooms').delete().eq('id', id)
+    if (error) throw error
+  },
+
   // --- HORARIOS ---
   async getSchedules() {
     const { data, error } = await supabase

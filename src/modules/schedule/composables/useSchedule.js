@@ -6,22 +6,29 @@ export function useSchedule() {
   const schedules = ref([])
   const professors = ref([])
   const courses = ref([])
-  const rooms = ref(['201', '202', '301', '401', '402', 'Multiuso'])
+  const rooms = ref([])
+  const roomsFull = ref([])
   const selectedDay = ref(new Date().getDay())
   const selectedDate = ref(new Date().toISOString().split('T')[0])
-  const currentTime = ref(new Date())
+  const realTime = ref(new Date())
+  const simulatedTime = ref(null)
+  const currentTime = computed(() => simulatedTime.value || realTime.value)
+  const announcedEvents = ref(new Set())
 
   // --- DATA LOADING ---
   const loadInitialData = async () => {
     try {
-      const [s, p, c] = await Promise.all([
+      const [s, p, c, r] = await Promise.all([
         scheduleService.getSchedules(),
         scheduleService.getProfessors(),
-        scheduleService.getCourses()
+        scheduleService.getCourses(),
+        scheduleService.getRooms()
       ])
       schedules.value = s
       professors.value = p
       courses.value = c
+      roomsFull.value = r
+      rooms.value = r.map(room => room.name)
     } catch (error) {
       console.error('Error loading data:', error)
     }
@@ -34,6 +41,7 @@ export function useSchedule() {
       .on('postgres_changes', { event: '*', table: 'schedules', schema: 'public' }, () => loadInitialData())
       .on('postgres_changes', { event: '*', table: 'professors', schema: 'public' }, () => loadInitialData())
       .on('postgres_changes', { event: '*', table: 'courses', schema: 'public' }, () => loadInitialData())
+      .on('postgres_changes', { event: '*', table: 'rooms', schema: 'public' }, () => loadInitialData())
       .subscribe()
 
     return () => {
@@ -44,7 +52,7 @@ export function useSchedule() {
   onMounted(() => {
     loadInitialData()
     const cleanup = setupSubscriptions()
-    const timer = setInterval(() => { currentTime.value = new Date() }, 1000)
+    const timer = setInterval(() => { realTime.value = new Date() }, 1000)
     
     onUnmounted(() => {
       cleanup()
@@ -89,11 +97,21 @@ export function useSchedule() {
       // Buscar si hay uno activo
       const active = todaySchedules.find(s => nowStr >= s.startTime && nowStr < s.endTime)
       
+      const getCourseColor = (name) => {
+        const n = name.toLowerCase()
+        if (n.includes('excel')) return '#107C41' // Excel Green
+        if (n.includes('diseño')) return '#F58220' // Design Orange
+        if (n.includes('power')) return '#F2C811' // Power BI Yellow
+        if (n.includes('auto')) return '#E52D27' // AutoCAD Red
+        return '#0078D4' // Revit / Default Blue
+      }
+
       if (active) {
         results.push({
           ...active,
           isNextClass: false,
-          progress: calculateProgress(active.startTime, active.endTime)
+          progress: calculateProgress(active.startTime, active.endTime),
+          color: getCourseColor(active.courseName)
         })
       } else {
         // Buscar el siguiente
@@ -102,13 +120,73 @@ export function useSchedule() {
           results.push({
             ...next,
             isNextClass: true,
-            progress: 0
+            progress: 0,
+            color: getCourseColor(next.courseName)
           })
         }
       }
     })
 
     return results
+  })
+
+  // --- ANNOUNCEMENT LOGIC ---
+  const speak = (text) => {
+    if (!window.speechSynthesis) return
+    
+    // Detener cualquier anuncio previo para evitar cola excesiva
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    
+    // Intentar buscar una voz más "premium" o natural
+    const voices = window.speechSynthesis.getVoices()
+    // Preferencias: Google (Chrome), Microsoft (Edge), o voces específicas de calidad
+    const preferredVoice = voices.find(v => 
+      (v.lang.includes('es') && v.name.includes('Google')) || 
+      (v.lang.includes('es') && v.name.includes('Natural')) ||
+      (v.lang.includes('es') && v.name.includes('Microsoft'))
+    )
+
+    if (preferredVoice) utterance.voice = preferredVoice
+    
+    utterance.lang = 'es-ES'
+    utterance.rate = 1.0 // Un poco más rápido para sonar más dinámico
+    utterance.pitch = 1.1 // Un tono ligeramente más agudo para sonar más "tecnológico"
+    utterance.volume = 1.0
+    
+    window.speechSynthesis.speak(utterance)
+  }
+
+  const checkEvents = () => {
+    activeSchedules.value.forEach(s => {
+      const startKey = `start-${s.id}`
+      const endKey = `end-${s.id}`
+
+      // Alerta de inicio: si es NextClass y falta poco o acaba de empezar
+      if (s.isNextClass) {
+        const [h, m] = s.startTime.split(':').map(Number)
+        const startTime = new Date(currentTime.value).setHours(h, m, 0)
+        const diffMinutes = (startTime - currentTime.value) / (1000 * 60)
+        
+        if (diffMinutes <= 5 && diffMinutes > 0 && !announcedEvents.value.has(startKey)) {
+          speak(`Atención. En breve se iniciará la clase de  ${s.courseName} en el salón ${s.room}.`)
+          announcedEvents.value.add(startKey)
+        }
+      }
+
+      // Alerta de culminación (85% o más)
+      if (!s.isNextClass && s.progress >= 85 && !announcedEvents.value.has(endKey)) {
+        speak(`Atención. La clase de ${s.courseName} en el salón ${s.room} está por culminar.`)
+        announcedEvents.value.add(endKey)
+      }
+    })
+  }
+
+  // Ejecutar checkEvents cada minuto o cuando cambie currentTime
+  onMounted(() => {
+    const eventTimer = setInterval(checkEvents, 30000)
+    onUnmounted(() => clearInterval(eventTimer))
   })
 
   const timelinePosition = computed(() => {
@@ -197,6 +275,13 @@ export function useSchedule() {
     deleteProfessor: async (id) => { await scheduleService.deleteProfessor(id) },
     addCourse: async (name, duration = 120) => { await scheduleService.upsertCourse({ name, default_duration: duration }) },
     updateCourse: async (id, name) => { await scheduleService.upsertCourse({ id, name }) },
-    deleteCourse: async (id) => { await scheduleService.deleteCourse(id) }
+    deleteCourse: async (id) => { await scheduleService.deleteCourse(id) },
+    addRoom: async (name, capacity = 0) => { await scheduleService.upsertRoom({ name, capacity }) },
+    updateRoom: async (id, name, capacity) => { await scheduleService.upsertRoom({ id, name, capacity }) },
+    deleteRoom: async (id) => { await scheduleService.deleteRoom(id) },
+    roomsFull,
+    simulatedTime,
+    setSimulatedTime: (time) => { simulatedTime.value = time },
+    resetTime: () => { simulatedTime.value = null }
   }
 }
