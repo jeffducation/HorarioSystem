@@ -74,7 +74,14 @@ const editValue = ref('')
 const editCapacity = ref(0)
 const isFullScreen = ref(false)
 const viewMode = ref('daily') // 'daily' or 'weekly'
-const activeRoom = ref('201')
+const activeRoom = ref(null)
+
+// Seleccionar el primer salón disponible por defecto
+watch(rooms, (newRooms) => {
+  if (newRooms.length > 0 && !activeRoom.value) {
+    activeRoom.value = newRooms[0].id
+  }
+}, { immediate: true })
 
 const toggleFullScreen = () => {
   isFullScreen.value = !isFullScreen.value
@@ -321,12 +328,12 @@ const executeDelete = async (mode) => {
           <!-- Selector de Salón para Vista Semanal (Compacto) -->
           <div v-if="viewMode === 'weekly'" class="flex bg-blue-50/50 p-1 rounded-xl border border-blue-100 overflow-x-auto no-scrollbar">
             <button 
-              v-for="room in rooms" :key="room"
-              @click="activeRoom = room"
+              v-for="room in rooms" :key="room.id"
+              @click="activeRoom = room.id"
               class="px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all whitespace-nowrap"
-              :class="activeRoom === room ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-300'"
+              :class="activeRoom === room.id ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-300'"
             >
-              R{{ room }}
+              R{{ room.name }}
             </button>
           </div>
         </div>

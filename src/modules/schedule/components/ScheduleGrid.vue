@@ -46,11 +46,11 @@ const emit = defineEmits(['assign', 'delete', 'cellClick', 'editClick', 'move'])
 // Filtrar por día y salón
 const getSchedulesForCell = (time, room, dayId = null) => {
   const targetDay = dayId !== null ? dayId : props.selectedDay
-  const targetRoom = dayId !== null ? props.activeRoom : room
+  const targetRoomId = dayId !== null ? props.activeRoom : room.id
 
   return props.schedules.filter(s => {
     const timeMatch = s.startTime.startsWith(time.split(':')[0])
-    const roomMatch = s.room === targetRoom
+    const roomMatch = s.roomId === targetRoomId
     
     if (!timeMatch || !roomMatch) return false
 
@@ -132,7 +132,8 @@ const handleDrop = (e, time, room, dayId = null) => {
     ...schedule,
     startTime: time,
     endTime: `${newEndH}:${newEndM}`,
-    room: dayId !== null ? props.activeRoom : room,
+    room: dayId !== null ? props.activeRoom : room.name,
+    roomId: dayId !== null ? props.activeRoom : room.id,
     dayOfWeek: targetDay,
     date: newDateStr
   }
@@ -169,8 +170,8 @@ const showTimeline = () => {
           
           <!-- Columnas Dinámicas -->
           <template v-if="viewMode === 'daily'">
-            <div v-for="room in rooms" :key="room" class="header-cell p-5 text-center border-r border-gray-800 font-black text-xs uppercase tracking-[0.2em]">
-              SALÓN {{ room }}
+            <div v-for="room in rooms" :key="room.id" class="header-cell p-5 text-center border-r border-gray-800 font-black text-xs uppercase tracking-[0.2em]">
+              SALÓN {{ room.name }}
             </div>
           </template>
           <template v-else>
@@ -189,11 +190,11 @@ const showTimeline = () => {
             <!-- Celdas Dinámicas -->
             <template v-if="viewMode === 'daily'">
               <div 
-                v-for="room in rooms" :key="room"
+                v-for="room in rooms" :key="room.id"
                 class="relative p-1 border-r border-gray-100 last:border-r-0 transition-all cursor-crosshair"
                 @dragover="onDragOver"
                 @drop="handleDrop($event, time, room)"
-                @click="emit('cellClick', { time, room, day: selectedDay })"
+                @click="emit('cellClick', { time, roomId: room.id, day: selectedDay })"
               >
                 <div class="h-full w-full relative z-10">
                   <ScheduleBlock 
@@ -212,7 +213,7 @@ const showTimeline = () => {
                 class="relative p-1 border-r border-gray-100 last:border-r-0 transition-all cursor-crosshair"
                 @dragover="onDragOver"
                 @drop="handleDrop($event, time, null, day.id)"
-                @click="emit('cellClick', { time, room: activeRoom, day: day.id })"
+                @click="emit('cellClick', { time, roomId: activeRoom, day: day.id })"
               >
                 <div class="h-full w-full relative z-10">
                   <ScheduleBlock 

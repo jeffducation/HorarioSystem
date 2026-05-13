@@ -16,7 +16,7 @@ const form = ref({
   id: null,
   courseId: '',
   professorId: '',
-  room: '',
+  roomId: '',
   startTime: '',
   endTime: '',
   section: '',
@@ -35,7 +35,7 @@ const errors = ref({
 const validate = () => {
   errors.value.course = !form.value.courseId
   errors.value.professor = !form.value.professorId
-  errors.value.room = !form.value.room
+  errors.value.room = !form.value.roomId
   
   return !errors.value.course && !errors.value.professor && !errors.value.room
 }
@@ -51,18 +51,20 @@ watch(() => props.show, (isShowing) => {
     errors.value = { course: false, professor: false, room: false }
     
     if (props.editItem) {
+      // Al editar, mapeamos los IDs explícitamente para asegurar que el select los reconozca
       form.value = { 
         ...props.editItem, 
-        courseId: props.editItem.courseId,
-        professorId: props.editItem.professorId,
-        daysOfWeek: [props.editItem.dayOfWeek] 
+        courseId: props.editItem.courseId || '',
+        professorId: props.editItem.professorId || '',
+        roomId: props.editItem.roomId || '',
+        daysOfWeek: props.editItem.dayOfWeek !== undefined ? [props.editItem.dayOfWeek] : []
       }
     } else {
       form.value = {
         id: null,
         courseId: '',
         professorId: '',
-        room: props.initialData?.room || '',
+        roomId: props.initialData?.roomId || '',
         startTime: props.initialData?.time || '08:00',
         endTime: '11:00',
         section: '',
@@ -150,12 +152,12 @@ const handleSave = () => {
           <div class="col-span-2">
             <label class="block text-[10px] font-black text-gray-400 uppercase mb-2">Aula / Salón</label>
             <select 
-              v-model="form.room" 
+              v-model="form.roomId" 
               :class="errors.room ? 'border-red-400' : 'border-gray-100'"
               class="w-full px-4 py-3 bg-gray-50 border-2 rounded-xl focus:border-blue-600 outline-none font-bold text-gray-700"
             >
               <option value="" disabled>Seleccionar Aula</option>
-              <option v-for="r in rooms" :key="r" :value="r">Salón {{ r }}</option>
+              <option v-for="r in rooms" :key="r.id" :value="r.id">Salón {{ r.name }}</option>
             </select>
             <p v-if="errors.room" class="text-red-500 text-[9px] font-bold mt-1 uppercase">El aula es obligatoria</p>
           </div>

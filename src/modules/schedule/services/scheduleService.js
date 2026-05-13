@@ -59,7 +59,7 @@ export const scheduleService = {
   async getSchedules() {
     const { data, error } = await supabase
       .from('schedules')
-      .select('*, courses(*), professors(*)')
+      .select('*, courses(*), professors(*), rooms(*)')
     if (error) throw error
     
     // Mapeo para mantener compatibilidad con el frontend
@@ -69,7 +69,8 @@ export const scheduleService = {
       courseName: s.courses?.name || 'Desconocido',
       professorId: s.professor_id,
       professor: s.professors?.name || 'Desconocido',
-      room: s.room,
+      roomId: s.room_id,
+      room: s.rooms?.name || 'S/N',
       startTime: s.start_time,
       endTime: s.end_time,
       dayOfWeek: s.day_of_week,
@@ -87,7 +88,7 @@ export const scheduleService = {
       id: schedule.id || undefined,
       course_id: schedule.courseId || null,
       professor_id: schedule.professorId || null,
-      room: schedule.room,
+      room_id: schedule.roomId || null,
       start_time: schedule.startTime,
       end_time: schedule.endTime,
       day_of_week: schedule.dayOfWeek,

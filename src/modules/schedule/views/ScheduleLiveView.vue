@@ -46,8 +46,8 @@ const handleTimeTravel = () => {
 // Mapeo eficiente de salones a sus horarios activos
 const roomSchedules = computed(() => {
   const map = {}
-  rooms.value.forEach(room => {
-    map[room] = activeSchedules.value.find(s => s.room === room) || null
+  rooms.value.forEach(roomObj => {
+    map[roomObj.name] = activeSchedules.value.find(s => s.roomId === roomObj.id) || null
   })
   return map
 })
@@ -92,35 +92,35 @@ const roomSchedules = computed(() => {
     
     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 relative z-10">
       <div 
-        v-for="room in rooms" 
-        :key="room"
+        v-for="roomObj in rooms" 
+        :key="roomObj.id"
         class="relative rounded-[3rem] p-8 md:p-10 border-2 transition-all duration-700 flex flex-col overflow-hidden justify-center group"
-        :class="roomSchedules[room] ? 'bg-[#0a101f] active-card' : 'bg-[#0f172a]/20 border-dashed border-white/5'"
-        :style="roomSchedules[room] ? { 
-          borderColor: roomSchedules[room].color + '44', 
-          '--glow-color': roomSchedules[room].color
+        :class="roomSchedules[roomObj.name] ? 'bg-[#0a101f] active-card' : 'bg-[#0f172a]/20 border-dashed border-white/5'"
+        :style="roomSchedules[roomObj.name] ? { 
+          borderColor: roomSchedules[roomObj.name].color + '44', 
+          '--glow-color': roomSchedules[roomObj.name].color
         } : {}"
       >
         <!-- Soft Border Trace (Solo si hay clase) -->
-        <div v-if="roomSchedules[room]" class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div v-if="roomSchedules[roomObj.name]" class="absolute inset-0 pointer-events-none overflow-hidden">
           <div class="absolute -inset-[50%] animate-[spin_10s_linear_infinite] opacity-40" 
-            :style="{ background: `conic-gradient(from 0deg, transparent 0deg, transparent 340deg, ${roomSchedules[room].color} 360deg)` }">
+            :style="{ background: `conic-gradient(from 0deg, transparent 0deg, transparent 340deg, ${roomSchedules[roomObj.name].color} 360deg)` }">
           </div>
           <div class="absolute inset-[1.5px] bg-[#0a101f] rounded-[3rem]"></div>
         </div>
         <!-- Header del Salón -->
         <div class="relative z-20 flex justify-between items-center mb-6">
           <div class="text-4xl font-black tracking-tighter uppercase">
-            Salón <span :class="roomSchedules[room] ? '' : 'text-gray-600'" :style="roomSchedules[room] ? { color: roomSchedules[room].color } : {}">
-              {{ room }}
+            Salón <span :class="roomSchedules[roomObj.name] ? '' : 'text-gray-600'" :style="roomSchedules[roomObj.name] ? { color: roomSchedules[roomObj.name].color } : {}">
+              {{ roomObj.name }}
             </span>
           </div>
-          <div v-if="roomSchedules[room]" class="px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-            :class="roomSchedules[room].isNextClass 
+          <div v-if="roomSchedules[roomObj.name]" class="px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+            :class="roomSchedules[roomObj.name].isNextClass 
               ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' 
               : 'bg-white/5 border-white/10 text-gray-400'"
           >
-            {{ roomSchedules[room].isNextClass ? 'Siguiente Clase' : 'En Curso' }}
+            {{ roomSchedules[roomObj.name].isNextClass ? 'Siguiente Clase' : 'En Curso' }}
           </div>
           <div v-else class="px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest text-emerald-500">
             Libre
@@ -128,21 +128,21 @@ const roomSchedules = computed(() => {
         </div>
 
         <!-- Contenido si hay clase -->
-        <template v-if="roomSchedules[room]">
+        <template v-if="roomSchedules[roomObj.name]">
           <div class="relative z-20 flex-1 flex flex-col justify-center">
-            <h3 class="text-5xl font-black leading-[1.1] mb-8 tracking-tighter uppercase line-clamp-2 course-title" :style="{ '--course-color': roomSchedules[room].color }">
-              {{ roomSchedules[room].courseName }}
+            <h3 class="text-5xl font-black leading-[1.1] mb-8 tracking-tighter uppercase line-clamp-2 course-title" :style="{ '--course-color': roomSchedules[roomObj.name].color }">
+              {{ roomSchedules[roomObj.name].courseName }}
             </h3>
 
             <div class="space-y-6 mb-10">
               <div class="flex items-center gap-6">
                 <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] w-20">Docente</div>
-                <div class="text-2xl font-bold text-white">{{ roomSchedules[room].professor }}</div>
+                <div class="text-2xl font-bold text-white">{{ roomSchedules[roomObj.name].professor }}</div>
               </div>
               <div class="flex items-center gap-6">
                 <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] w-20">Horario</div>
-                <div class="text-3xl font-black tabular-nums" :style="{ color: roomSchedules[room].color }">
-                  {{ roomSchedules[room].startTime }} - {{ roomSchedules[room].endTime }}
+                <div class="text-3xl font-black tabular-nums" :style="{ color: roomSchedules[roomObj.name].color }">
+                  {{ roomSchedules[roomObj.name].startTime }} - {{ roomSchedules[roomObj.name].endTime }}
                 </div>
               </div>
             </div>
@@ -151,15 +151,15 @@ const roomSchedules = computed(() => {
           <!-- Footer con Progreso y Sesión -->
           <div class="relative z-20 mt-auto pt-8 border-t border-white/5 flex items-end justify-between gap-8">
             <div class="flex-1">
-              <template v-if="!roomSchedules[room].isNextClass">
+              <template v-if="!roomSchedules[roomObj.name].isNextClass">
                 <div class="flex justify-between text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
                   <span>Progreso de Clase</span>
-                  <span :style="{ color: roomSchedules[room].color }">{{ roomSchedules[room].progress }}%</span>
+                  <span :style="{ color: roomSchedules[roomObj.name].color }">{{ roomSchedules[roomObj.name].progress }}%</span>
                 </div>
                 <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                   <div 
                     class="h-full rounded-full transition-all duration-1000"
-                    :style="{ width: roomSchedules[room].progress + '%', backgroundColor: roomSchedules[room].color, boxShadow: `0 0 20px ${roomSchedules[room].color}` }"
+                    :style="{ width: roomSchedules[roomObj.name].progress + '%', backgroundColor: roomSchedules[roomObj.name].color, boxShadow: `0 0 20px ${roomSchedules[roomObj.name].color}` }"
                   ></div>
                 </div>
               </template>
@@ -172,7 +172,7 @@ const roomSchedules = computed(() => {
             </div>
             <div class="text-right bg-white/5 px-6 py-3 rounded-2xl border border-white/5">
               <span class="text-[9px] font-black text-gray-500 uppercase block tracking-widest mb-1">Sesión</span>
-              <span class="text-3xl font-black" :style="{ color: roomSchedules[room].color }">{{ roomSchedules[room].session }}</span>
+              <span class="text-3xl font-black" :style="{ color: roomSchedules[roomObj.name].color }">{{ roomSchedules[roomObj.name].session }}</span>
             </div>
           </div>
         </template>
