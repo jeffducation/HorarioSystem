@@ -227,52 +227,52 @@ const executeDelete = async (mode) => {
 </script>
 
 <template>
-  <div class="p-4 sm:p-6 md:p-8 max-w-[1700px] mx-auto space-y-6 md:space-y-8 animate-in fade-in duration-700">
-    <!-- Navbar de Tabs Modernizado -->
-    <div class="flex flex-col sm:flex-row gap-4 border-b border-gray-100 pb-1 items-center">
-      <div class="flex w-full sm:w-auto bg-gray-100/50 p-1 rounded-2xl overflow-x-auto no-scrollbar">
+  <div class="p-3 sm:p-6 md:p-8 w-full max-w-full mx-auto space-y-4 md:space-y-8 animate-in fade-in duration-700">
+    <!-- Navbar de Tabs Dark -->
+    <div class="flex flex-col sm:flex-row gap-4 border-b border-white/5 pb-1 items-center">
+      <div class="flex w-full sm:w-auto bg-white/5 p-1 rounded-2xl overflow-x-auto no-scrollbar">
         <button 
           @click="activeTab = 'schedule'"
           class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
-          :class="activeTab === 'schedule' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+          :class="activeTab === 'schedule' ? 'bg-blue-600/20 text-blue-400 shadow-sm shadow-blue-500/10' : 'text-gray-500 hover:text-gray-300'"
         >
           Horarios
         </button>
         <button 
           @click="activeTab = 'entities'"
           class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
-          :class="activeTab === 'entities' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+          :class="activeTab === 'entities' ? 'bg-blue-600/20 text-blue-400 shadow-sm shadow-blue-500/10' : 'text-gray-500 hover:text-gray-300'"
         >
           Gestión
         </button>
         <button 
           @click="activeTab = 'rooms'"
           class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
-          :class="activeTab === 'rooms' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+          :class="activeTab === 'rooms' ? 'bg-blue-600/20 text-blue-400 shadow-sm shadow-blue-500/10' : 'text-gray-500 hover:text-gray-300'"
         >
           Salones
         </button>
         <router-link 
           to="/monitor"
-          class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2 text-gray-400 hover:text-blue-600 whitespace-nowrap"
+          class="flex-1 sm:flex-none px-6 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl flex items-center justify-center gap-2 text-gray-500 hover:text-blue-400 hover:drop-shadow-[0_0_8px_rgba(96,165,250,0.4)] whitespace-nowrap"
         >
           Monitor
         </router-link>
       </div>
 
       <!-- Selector de Vista (Visible solo en Horarios) -->
-      <div v-if="activeTab === 'schedule'" class="flex bg-gray-100/50 p-1 rounded-xl w-full sm:w-auto sm:ml-auto">
+      <div v-if="activeTab === 'schedule'" class="flex bg-white/5 p-1 rounded-xl w-full sm:w-auto sm:ml-auto">
         <button 
           @click="viewMode = 'daily'"
           class="flex-1 sm:px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
-          :class="viewMode === 'daily' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
+          :class="viewMode === 'daily' ? 'bg-blue-600/20 text-blue-400 shadow-sm' : 'text-gray-500'"
         >
           Salones
         </button>
         <button 
           @click="viewMode = 'weekly'"
           class="flex-1 sm:px-4 py-2 text-[9px] font-black uppercase rounded-lg transition-all"
-          :class="viewMode === 'weekly' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'"
+          :class="viewMode === 'weekly' ? 'bg-blue-600/20 text-blue-400 shadow-sm' : 'text-gray-500'"
         >
           Semana
         </button>
@@ -284,54 +284,54 @@ const executeDelete = async (mode) => {
       <header class="flex flex-col gap-6">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
-              Planificador <span class="text-blue-600">Pro</span>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter italic leading-none">
+             Schedule<span class="text-blue-400">X</span>
             </h1>
-            <p class="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-2 flex items-center gap-2">
-              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Gestión de horarios en tiempo real
+            <p class="text-gray-500 font-bold text-[10px] uppercase tracking-widest mt-2 flex items-center gap-2">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+              Gestión de horarios
             </p>
           </div>
 
           <button 
             @click="toggleFullScreen"
-            class="hidden md:flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+            class="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-white/5 text-gray-300 border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600/20 hover:text-blue-400 hover:border-blue-500/30 hover:shadow-[0_0_15px_rgba(96,165,250,0.15)] transition-all duration-300 active:scale-95"
           >
-            <span v-if="!isFullScreen">⛶ Pantalla Completa</span>
-            <span v-else>✕ Salir</span>
+            <span v-if="!isFullScreen"><span class="md:hidden">⛶</span><span class="hidden md:inline">⛶ Pantalla Completa</span></span>
+            <span v-else><span class="md:hidden">✕</span><span class="hidden md:inline">✕ Salir</span></span>
           </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] items-center gap-4 bg-white/50 backdrop-blur-md p-2 rounded-[2rem] border border-gray-100 shadow-sm">
-          <!-- Selector de Fecha Compacto -->
-          <div class="flex items-center justify-between gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
-            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() - 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all shadow-sm">◀</button>
+        <div class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] items-stretch lg:items-center gap-4 bg-white/[0.03] backdrop-blur-md p-3 md:p-2 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5">
+          <!-- Selector de Fecha -->
+          <div class="flex items-center justify-between gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/5 self-center lg:self-auto w-full lg:w-auto">
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() - 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-xl transition-all text-gray-400 hover:text-blue-400">◀</button>
             <div class="relative flex flex-col items-center px-4">
-              <span class="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Fecha seleccionada</span>
-              <input type="date" v-model="selectedDate" class="bg-transparent border-none outline-none font-black text-xs uppercase tracking-widest text-blue-600 cursor-pointer" />
+              <span class="text-[8px] font-black text-gray-500 uppercase tracking-tighter">Fecha seleccionada</span>
+              <input type="date" v-model="selectedDate" class="bg-transparent border-none outline-none font-black text-xs uppercase tracking-widest text-blue-400 cursor-pointer text-center" />
             </div>
-            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() + 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white rounded-xl transition-all shadow-sm">▶</button>
+            <button @click="const d = new Date(selectedDate + 'T00:00:00'); d.setDate(d.getDate() + 1); selectedDate = d.toISOString().split('T')[0]" class="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-xl transition-all text-gray-400 hover:text-blue-400">▶</button>
           </div>
 
-          <!-- Selector de Días Horizontal -->
+          <!-- Selector de Días -->
           <div class="flex gap-2 overflow-x-auto pb-1 lg:pb-0 no-scrollbar snap-x w-full">
             <button 
               v-for="day in daysOfWeek" :key="day.id"
               @click="selectDayAndDate(day.id)"
-              class="flex-none min-w-[90px] lg:min-w-0 lg:flex-1 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all snap-center shadow-sm"
-              :class="selectedDay === day.id ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-100'"
+              class="flex-none min-w-[80px] sm:min-w-[100px] lg:min-w-0 lg:flex-1 px-3 py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all snap-center"
+              :class="selectedDay === day.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-300 border border-white/5'"
             >
               {{ day.name }}
             </button>
           </div>
 
-          <!-- Selector de Salón para Vista Semanal (Compacto) -->
-          <div v-if="viewMode === 'weekly'" class="flex bg-blue-50/50 p-1 rounded-xl border border-blue-100 overflow-x-auto no-scrollbar">
+          <!-- Selector de Salón Semanal -->
+          <div v-if="viewMode === 'weekly'" class="flex bg-blue-600/10 p-1 rounded-xl border border-blue-500/20 overflow-x-auto no-scrollbar w-full lg:w-auto">
             <button 
               v-for="room in rooms" :key="room.id"
               @click="activeRoom = room.id"
-              class="px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all whitespace-nowrap"
-              :class="activeRoom === room.id ? 'bg-white text-blue-600 shadow-sm' : 'text-blue-300'"
+              class="flex-1 lg:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all whitespace-nowrap"
+              :class="activeRoom === room.id ? 'bg-blue-600/30 text-blue-400 shadow-sm' : 'text-blue-500/40 hover:text-blue-400'"
             >
               R{{ room.name }}
             </button>
@@ -341,8 +341,8 @@ const executeDelete = async (mode) => {
 
       <div :class="{ 'full-screen-wrapper': isFullScreen }">
         <div v-if="isFullScreen" class="mb-6 flex justify-between items-center">
-           <h2 class="text-2xl font-black text-gray-900 tracking-tighter">Vista Panorámica - {{ daysOfWeek.find(d => d.id === selectedDay)?.name }}</h2>
-           <button @click="toggleFullScreen" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-all">
+           <h2 class="text-2xl font-black text-white tracking-tighter">Vista Panorámica - {{ daysOfWeek.find(d => d.id === selectedDay)?.name }}</h2>
+           <button @click="toggleFullScreen" class="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl font-bold text-sm hover:bg-red-500/20 hover:shadow-[0_0_12px_rgba(248,113,113,0.2)] transition-all">
              Cerrar Vista
            </button>
         </div>
@@ -359,36 +359,36 @@ const executeDelete = async (mode) => {
     <!-- VISTA 2: GESTIÓN DE ENTIDADES -->
     <div v-else-if="activeTab === 'entities'" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 animate-in slide-in-from-right duration-500">
       <!-- Profesores -->
-      <section class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
+      <section class="bg-[#0a1228] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 shadow-xl flex flex-col">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg md:text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
+          <h3 class="text-lg md:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
             Docentes
           </h3>
-          <span class="px-3 py-1 bg-gray-100 rounded-full text-[9px] md:text-[10px] font-black text-gray-400 uppercase">{{ professors.length }} Total</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[9px] md:text-[10px] font-black text-gray-500 uppercase">{{ professors.length }} Total</span>
         </div>
 
         <div class="flex gap-2 mb-4">
-          <input v-model="newProf" type="text" placeholder="Nuevo Profesor..." class="flex-1 px-4 md:px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-600 outline-none font-bold text-sm" @keyup.enter="handleAddProfessor" />
-          <button @click="handleAddProfessor" class="px-4 md:px-6 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg hover:bg-blue-700 transition-all">+</button>
+          <input v-model="newProf" type="text" placeholder="Nuevo Profesor..." class="flex-1 px-4 md:px-5 py-3 bg-white/5 border-2 border-white/10 rounded-xl focus:border-blue-500 outline-none font-bold text-sm text-white placeholder-gray-600" @keyup.enter="handleAddProfessor" />
+          <button @click="handleAddProfessor" class="px-4 md:px-6 py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(96,165,250,0.3)] transition-all">+</button>
         </div>
 
         <div class="mb-4 relative">
-          <input v-model="searchProf" type="text" placeholder="Buscar docente..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-blue-100 outline-none" />
+          <input v-model="searchProf" type="text" placeholder="Buscar docente..." class="w-full px-5 py-2.5 bg-white/5 border border-white/5 rounded-xl text-xs font-medium text-white placeholder-gray-600 focus:ring-2 focus:ring-blue-500/30 outline-none" />
         </div>
 
         <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[300px] md:min-h-[400px]">
-          <div v-for="p in filteredProfessors" :key="p.id" class="flex justify-between items-center p-3 md:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-all">
+          <div v-for="p in filteredProfessors" :key="p.id" class="flex justify-between items-center p-3 md:p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:border-blue-500/30 hover:bg-blue-600/5 transition-all">
             <div v-if="editingProfId === p.id" class="flex-1 flex gap-2">
-              <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-blue-400 rounded-lg outline-none font-bold" @keyup.enter="saveEditProf(p.id)" />
-              <button @click="saveEditProf(p.id)" class="text-blue-600 font-black text-xs uppercase">Ok</button>
+              <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-blue-500 bg-white/5 rounded-lg outline-none font-bold text-white" @keyup.enter="saveEditProf(p.id)" />
+              <button @click="saveEditProf(p.id)" class="text-blue-400 font-black text-xs uppercase">Ok</button>
             </div>
             <div v-else class="flex-1 flex justify-between items-center">
-              <span class="font-bold text-gray-700 text-sm">{{ p.name }}</span>
+              <span class="font-bold text-gray-300 text-sm">{{ p.name }}</span>
               <div class="flex gap-3 ml-4">
-                <button @click="startEditProf(p)" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <button @click="startEditProf(p)" class="text-gray-600 hover:text-blue-400 hover:drop-shadow-[0_0_6px_rgba(96,165,250,0.4)] transition-all">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
-                <button @click="confirmDeleteProf(p.id)" class="text-gray-400 hover:text-red-600 transition-colors">
+                <button @click="confirmDeleteProf(p.id)" class="text-gray-600 hover:text-red-400 hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.4)] transition-all">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
               </div>
@@ -398,36 +398,36 @@ const executeDelete = async (mode) => {
       </section>
 
       <!-- Cursos -->
-      <section class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
+      <section class="bg-[#0a1228] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 shadow-xl flex flex-col">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg md:text-xl font-black text-gray-900 uppercase tracking-tighter flex items-center gap-3">
+          <h3 class="text-lg md:text-xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
             Cursos
           </h3>
-          <span class="px-3 py-1 bg-gray-100 rounded-full text-[9px] md:text-[10px] font-black text-gray-400 uppercase">{{ courses.length }} Total</span>
+          <span class="px-3 py-1 bg-white/5 rounded-full text-[9px] md:text-[10px] font-black text-gray-500 uppercase">{{ courses.length }} Total</span>
         </div>
 
         <div class="flex gap-2 mb-4">
-          <input v-model="newCourse" type="text" placeholder="Nuevo Curso..." class="flex-1 px-4 md:px-5 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-emerald-600 outline-none font-bold text-sm" @keyup.enter="handleAddCourse" />
-          <button @click="handleAddCourse" class="px-4 md:px-6 py-3 bg-emerald-600 text-white font-black rounded-xl shadow-lg hover:bg-emerald-700 transition-all">+</button>
+          <input v-model="newCourse" type="text" placeholder="Nuevo Curso..." class="flex-1 px-4 md:px-5 py-3 bg-white/5 border-2 border-white/10 rounded-xl focus:border-emerald-500 outline-none font-bold text-sm text-white placeholder-gray-600" @keyup.enter="handleAddCourse" />
+          <button @click="handleAddCourse" class="px-4 md:px-6 py-3 bg-emerald-600 text-white font-black rounded-xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 hover:shadow-[0_0_20px_rgba(52,211,153,0.3)] transition-all">+</button>
         </div>
 
         <div class="mb-4 relative">
-          <input v-model="searchCourse" type="text" placeholder="Buscar curso..." class="w-full px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-100 outline-none" />
+          <input v-model="searchCourse" type="text" placeholder="Buscar curso..." class="w-full px-5 py-2.5 bg-white/5 border border-white/5 rounded-xl text-xs font-medium text-white placeholder-gray-600 focus:ring-2 focus:ring-emerald-500/30 outline-none" />
         </div>
 
         <div class="space-y-2 flex-1 overflow-y-auto pr-2 min-h-[300px] md:min-h-[400px]">
-          <div v-for="c in filteredCourses" :key="c.id" class="flex justify-between items-center p-3 md:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-emerald-200 transition-all">
+          <div v-for="c in filteredCourses" :key="c.id" class="flex justify-between items-center p-3 md:p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:border-emerald-500/30 hover:bg-emerald-600/5 transition-all">
             <div v-if="editingCourseId === c.id" class="flex-1 flex gap-2">
-              <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-emerald-400 rounded-lg outline-none font-bold" @keyup.enter="saveEditCourse(c.id)" />
-              <button @click="saveEditCourse(c.id)" class="text-emerald-600 font-black text-xs uppercase">Ok</button>
+              <input v-model="editValue" class="flex-1 px-3 py-1 border-2 border-emerald-500 bg-white/5 rounded-lg outline-none font-bold text-white" @keyup.enter="saveEditCourse(c.id)" />
+              <button @click="saveEditCourse(c.id)" class="text-emerald-400 font-black text-xs uppercase">Ok</button>
             </div>
             <div v-else class="flex-1 flex justify-between items-center">
-              <span class="font-bold text-gray-700 text-sm">{{ c.name }}</span>
+              <span class="font-bold text-gray-300 text-sm">{{ c.name }}</span>
               <div class="flex gap-3 ml-4">
-                <button @click="startEditCourse(c)" class="text-gray-400 hover:text-emerald-600 transition-colors">
+                <button @click="startEditCourse(c)" class="text-gray-600 hover:text-emerald-400 hover:drop-shadow-[0_0_6px_rgba(52,211,153,0.4)] transition-all">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
-                <button @click="confirmDeleteCourse(c.id)" class="text-gray-400 hover:text-red-600 transition-colors">
+                <button @click="confirmDeleteCourse(c.id)" class="text-gray-600 hover:text-red-400 hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.4)] transition-all">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
               </div>
@@ -439,73 +439,73 @@ const executeDelete = async (mode) => {
 
     <!-- VISTA 3: GESTIÓN DE SALONES -->
     <div v-else-if="activeTab === 'rooms'" class="animate-in slide-in-from-bottom duration-500">
-      <section class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-xl flex flex-col">
+      <section class="bg-[#0a1228] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 shadow-xl flex flex-col">
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h3 class="text-2xl md:text-3xl font-black text-gray-900 uppercase tracking-tighter">
+            <h3 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">
               Control de Salones
             </h3>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Configuración de ambientes y capacidad de PCs</p>
+            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Configuración de ambientes y capacidad de PCs</p>
           </div>
-          <span class="px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-[10px] font-black uppercase tracking-widest">{{ roomsFull.length }} Ambientes</span>
+          <span class="px-4 py-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest">{{ roomsFull.length }} Ambientes</span>
         </div>
 
-        <div class="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 mb-8">
+        <div class="bg-white/[0.03] p-6 rounded-[2rem] border border-white/5 mb-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div class="flex flex-col gap-2">
-              <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre del Salón</label>
-              <input v-model="newRoom" type="text" placeholder="Ej: 201, 405..." class="px-5 py-3.5 bg-white border-2 border-gray-100 rounded-xl focus:border-purple-600 outline-none font-bold text-sm shadow-sm" />
+              <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Nombre del Salón</label>
+              <input v-model="newRoom" type="text" placeholder="Ej: 201, 405..." class="px-5 py-3.5 bg-white/5 border-2 border-white/10 rounded-xl focus:border-purple-500 outline-none font-bold text-sm text-white placeholder-gray-600" />
             </div>
             <div class="flex flex-col gap-2">
-              <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-1">Capacidad PCs</label>
-              <input v-model.number="newRoomCapacity" type="number" placeholder="0" class="px-5 py-3.5 bg-white border-2 border-gray-100 rounded-xl focus:border-purple-600 outline-none font-bold text-sm shadow-sm" />
+              <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Capacidad PCs</label>
+              <input v-model.number="newRoomCapacity" type="number" placeholder="0" class="px-5 py-3.5 bg-white/5 border-2 border-white/10 rounded-xl focus:border-purple-500 outline-none font-bold text-sm text-white placeholder-gray-600" />
             </div>
-            <button @click="handleAddRoom" class="h-[52px] bg-purple-600 text-white font-black rounded-xl shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all uppercase tracking-widest text-[10px]">
+            <button @click="handleAddRoom" class="h-[52px] bg-purple-600 text-white font-black rounded-xl shadow-lg shadow-purple-500/20 hover:bg-purple-500 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all uppercase tracking-widest text-[10px]">
               Registrar Nuevo Ambiente
             </button>
           </div>
         </div>
 
         <div class="mb-6 relative max-w-md">
-          <input v-model="searchRoom" type="text" placeholder="Filtrar por nombre..." class="w-full px-6 py-4 bg-white border border-gray-100 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-purple-50 outline-none shadow-sm" />
+          <input v-model="searchRoom" type="text" placeholder="Filtrar por nombre..." class="w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl text-xs font-bold text-white placeholder-gray-600 focus:ring-4 focus:ring-purple-500/10 outline-none" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-y-auto pr-2 max-h-[600px]">
           <div v-for="r in filteredRooms" :key="r.id" class="relative group">
-            <div class="p-6 bg-white rounded-[2rem] border border-gray-100 hover:border-purple-200 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300">
+            <div class="p-6 bg-white/[0.03] rounded-[2rem] border border-white/5 hover:border-purple-500/30 transition-all hover:shadow-[0_0_25px_rgba(168,85,247,0.08)] hover:-translate-y-1 duration-300">
               <div v-if="editingRoomId === r.id" class="space-y-4">
-                <input v-model="editValue" class="w-full px-4 py-2 border-2 border-purple-400 rounded-xl outline-none font-bold text-sm" @keyup.enter="saveEditRoom(r.id)" />
+                <input v-model="editValue" class="w-full px-4 py-2 border-2 border-purple-500 bg-white/5 rounded-xl outline-none font-bold text-sm text-white" @keyup.enter="saveEditRoom(r.id)" />
                 <div class="flex items-center gap-2">
-                  <span class="text-[9px] font-black text-gray-400 uppercase">PCs:</span>
-                  <input v-model.number="editCapacity" type="number" class="w-20 px-3 py-1 border-2 border-purple-400 rounded-xl outline-none font-bold text-sm" />
+                  <span class="text-[10px] font-black text-gray-500 uppercase">PCs:</span>
+                  <input v-model.number="editCapacity" type="number" class="w-20 px-3 py-1 border-2 border-purple-500 bg-white/5 rounded-xl outline-none font-bold text-sm text-white" />
                 </div>
-                <button @click="saveEditRoom(r.id)" class="w-full py-2 bg-purple-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest">Guardar</button>
+                <button @click="saveEditRoom(r.id)" class="w-full py-2 bg-purple-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all">Guardar</button>
               </div>
               <div v-else>
                 <div class="flex justify-between items-start mb-4">
-                  <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center font-black text-lg">
+                  <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center font-black text-lg border border-purple-500/20">
                     {{ r.name.charAt(0) }}
                   </div>
                   <div class="flex gap-2">
-                    <button @click="startEditRoom(r)" class="p-2 text-gray-300 hover:text-purple-600 transition-colors">
+                    <button @click="startEditRoom(r)" class="p-2 text-gray-600 hover:text-purple-400 hover:drop-shadow-[0_0_6px_rgba(168,85,247,0.4)] transition-all">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     </button>
-                    <button @click="confirmDeleteRoom(r.id)" class="p-2 text-gray-300 hover:text-red-600 transition-colors">
+                    <button @click="confirmDeleteRoom(r.id)" class="p-2 text-gray-600 hover:text-red-400 hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.4)] transition-all">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </div>
                 </div>
-                <h4 class="text-xl font-black text-gray-900 mb-1">Salón {{ r.name }}</h4>
+                <h4 class="text-xl font-black text-white mb-1">Salón {{ r.name }}</h4>
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Activo</span>
+                  <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Activo</span>
                 </div>
                 
-                <div class="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
-                  <span class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Capacidad</span>
-                  <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-xl">
-                    <span class="text-xs font-black text-purple-600 tabular-nums">{{ r.capacity || 0 }}</span>
-                    <span class="text-[8px] font-bold text-gray-400 uppercase">PCs</span>
+                <div class="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
+                  <span class="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Capacidad</span>
+                  <div class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                    <span class="text-xs font-black text-purple-400 tabular-nums">{{ r.capacity || 0 }}</span>
+                    <span class="text-[8px] font-bold text-gray-500 uppercase">PCs</span>
                   </div>
                 </div>
               </div>
@@ -526,22 +526,22 @@ const executeDelete = async (mode) => {
     <div v-if="showDeleteConfirm" class="fixed inset-0 z-[2000] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showDeleteConfirm = false"></div>
       
-      <div class="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300">
+      <div class="relative bg-[#0a1228] rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300 border border-white/10">
         <div class="p-8 text-center">
           <div class="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </div>
           
-          <h3 class="text-2xl font-black text-gray-900 tracking-tighter mb-2">Eliminar Horario</h3>
-          <p class="text-gray-500 font-medium mb-8">
-            Estás por eliminar el horario de <span class="font-black text-gray-900">{{ itemToDelete?.courseName }}</span>. 
+          <h3 class="text-2xl font-black text-white tracking-tighter mb-2">Eliminar Horario</h3>
+          <p class="text-gray-400 font-medium mb-8">
+            Estás por eliminar el horario de <span class="font-black text-white">{{ itemToDelete?.courseName }}</span>. 
             ¿Cómo deseas proceder?
           </p>
 
           <div class="space-y-3">
             <button 
               @click="executeDelete('single')"
-              class="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg active:scale-95"
+              class="w-full py-4 bg-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all active:scale-95"
             >
               Eliminar solo este bloque
             </button>
@@ -555,15 +555,15 @@ const executeDelete = async (mode) => {
             
             <button 
               @click="showDeleteConfirm = false"
-              class="w-full py-4 text-gray-400 font-black text-xs uppercase tracking-widest hover:text-gray-600 transition-all"
+              class="w-full py-4 text-gray-500 font-black text-xs uppercase tracking-widest hover:text-gray-300 transition-all"
             >
               Cancelar
             </button>
           </div>
         </div>
         
-        <div class="bg-gray-50 p-4 text-center">
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Esta acción no se puede deshacer</p>
+        <div class="bg-white/5 p-4 text-center">
+          <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Esta acción no se puede deshacer</p>
         </div>
       </div>
     </div>
@@ -572,14 +572,14 @@ const executeDelete = async (mode) => {
     <div v-if="showGenericConfirm" class="fixed inset-0 z-[2000] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showGenericConfirm = false"></div>
       
-      <div class="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300">
+      <div class="relative bg-[#0a1228] rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-300 border border-white/10">
         <div class="p-8 text-center">
-          <div class="w-20 h-20 bg-gray-50 text-gray-400 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <div class="w-20 h-20 bg-red-500/10 text-red-400 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           </div>
           
-          <h3 class="text-2xl font-black text-gray-900 tracking-tighter mb-2">{{ genericConfirmTitle }}</h3>
-          <p class="text-gray-500 font-medium mb-8">
+          <h3 class="text-2xl font-black text-white tracking-tighter mb-2">{{ genericConfirmTitle }}</h3>
+          <p class="text-gray-400 font-medium mb-8">
             {{ genericConfirmMessage }}
           </p>
 
@@ -593,15 +593,15 @@ const executeDelete = async (mode) => {
             
             <button 
               @click="showGenericConfirm = false"
-              class="w-full py-4 text-gray-400 font-black text-xs uppercase tracking-widest hover:text-gray-600 transition-all"
+              class="w-full py-4 text-gray-500 font-black text-xs uppercase tracking-widest hover:text-gray-300 transition-all"
             >
               Cancelar
             </button>
           </div>
         </div>
         
-        <div class="bg-gray-50 p-4 text-center">
-          <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Esta acción es irreversible</p>
+        <div class="bg-white/5 p-4 text-center">
+          <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Esta acción es irreversible</p>
         </div>
       </div>
     </div>
@@ -612,7 +612,7 @@ const executeDelete = async (mode) => {
 /* Custom Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -624,7 +624,7 @@ const executeDelete = async (mode) => {
   width: 100vw;
   height: 100vh;
   z-index: 1000;
-  background: #f8fafc;
+  background: #060b18;
   padding: 1rem;
   overflow-y: auto;
   animation: fullScreenIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);

@@ -74,11 +74,11 @@ const handleLogin = async () => {
 }
 
 .login-card {
-  background: rgba(240, 236, 236, 0.911);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 18, 40, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 2.5rem;
-  border-radius: 20px;
+  border-radius: 32px;
   width: 100%;
   max-width: 400px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -99,10 +99,10 @@ const handleLogin = async () => {
 }
 
 .login-logo {
-  width: 100px;
+  width: 120px;
   height: auto;
   margin-bottom: 1.5rem;
-  filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.3));
+  filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.4));
   animation: pulse 3s infinite ease-in-out;
 }
 
@@ -113,16 +113,21 @@ const handleLogin = async () => {
 
 .login-header h1 {
   color: #fff;
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(45deg, #0a2f50 0%, #3a6092 100%);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  background: linear-gradient(to right, #ffffff, #60a5fa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .login-header p {
-  color: rgb(19, 51, 95);
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 800;
 }
 
 .login-form {
@@ -138,18 +143,22 @@ const handleLogin = async () => {
 }
 
 .form-group label {
-  color: #e2e8f0;
-  font-size: 0.85rem;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-left: 0.25rem;
 }
 
 .form-group input {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
   color: white;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-group input:focus {
@@ -165,15 +174,18 @@ const handleLogin = async () => {
 }
 
 .btn-login {
-  background: linear-gradient(45deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
-  padding: 0.8rem;
+  padding: 1rem;
   border: none;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-top: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 1rem;
+  box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
 }
 
 .btn-login:hover:not(:disabled) {

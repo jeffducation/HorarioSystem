@@ -43,12 +43,12 @@ const onDragStart = (e) => {
     <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
 
     <div class="flex justify-between items-start mb-1 p-3 pb-0">
-      <span class="text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg bg-white/80 border border-gray-100 text-gray-500">
+      <span class="text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg bg-black/50 border border-white/10 text-gray-300">
         {{ schedule.startTime }} - {{ schedule.endTime }}
       </span>
       <button 
         @click.stop="emit('delete', schedule)"
-        class="relative z-50 p-2 bg-white/90 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-md border border-red-100 active:scale-90"
+        class="relative z-50 p-2 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-md border border-red-500/20 active:scale-90"
         title="Eliminar Horario"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -56,20 +56,20 @@ const onDragStart = (e) => {
     </div>
 
     <div class="px-4 pb-4 space-y-2">
-      <h4 class="text-xs font-black text-gray-900 leading-tight uppercase tracking-tight line-clamp-2">
+      <h4 class="text-xs font-black text-white leading-tight uppercase tracking-tight line-clamp-2 mb-2 font-outfit">
         {{ schedule.courseName }}
       </h4>
       
       <div class="space-y-0.5">
-        <p class="text-[9px] font-bold text-gray-500 truncate flex items-center gap-1">
+        <p class="text-[9px] font-bold text-gray-200 truncate flex items-center gap-1">
           <span class="w-1 h-1 rounded-full" :style="{ backgroundColor: schedule.color }"></span>
           {{ schedule.professor }}
         </p>
         <div class="flex justify-between items-center">
-          <p class="text-[9px] font-black tracking-tighter" :style="{ color: schedule.color }">
+          <p class="text-[10px] font-black tracking-tighter" :style="{ color: schedule.color }">
             SEC. {{ schedule.section }}
           </p>
-          <p v-if="schedule.module || schedule.session" class="text-[8px] font-black text-gray-400">
+          <p v-if="schedule.module || schedule.session" class="text-[10px] font-black text-yellow-300">
             M{{ schedule.module }} S{{ schedule.session }}
           </p>
         </div>
@@ -78,7 +78,7 @@ const onDragStart = (e) => {
 
     <!-- Indicador de "Edit" en hover -->
     <div class="absolute bottom-3 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-       <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">Click para editar</span>
+       <span class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Click para editar</span>
     </div>
   </div>
 </template>
@@ -112,5 +112,9 @@ const onDragStart = (e) => {
 
 :deep(.full-screen-grid) .schedule-block .p-3 {
   padding: 0.25rem 0.5rem !important;
+}
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
 }
 </style>

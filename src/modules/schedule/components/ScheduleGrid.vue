@@ -148,20 +148,20 @@ const showTimeline = () => {
 </script>
 
 <template>
-  <div class="schedule-container border border-gray-200 rounded-3xl overflow-hidden bg-white shadow-xl relative">
-    
-    <!-- Línea de Tiempo -->
-    <div 
-      v-if="showTimeline()"
-      class="absolute left-0 right-0 z-30 pointer-events-none flex items-center"
-      :style="{ top: `${timelinePosition}%` }"
-    >
-      <div class="w-full border-t-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]"></div>
-      <div class="absolute -left-1 w-4 h-4 bg-red-500 rounded-full border-4 border-white shadow-lg"></div>
-    </div>
+  <div class="schedule-container border border-white/10 rounded-3xl overflow-hidden bg-[#0a1228] shadow-xl relative">
 
     <div class="grid-scroll-container">
       <div class="grid-content relative">
+
+        <!-- Línea de Tiempo (inside grid-content for proper scroll tracking) -->
+        <div 
+          v-if="showTimeline()"
+          class="timeline-indicator absolute left-0 right-0 z-30 pointer-events-none flex items-center"
+          :style="{ top: `calc(var(--header-height) + ${timelinePosition} * var(--row-height))` }"
+        >
+          <div class="w-full border-t-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]"></div>
+          <div class="absolute -left-1 w-4 h-4 bg-red-500 rounded-full border-4 border-[#0a1228] shadow-lg shadow-red-500/30"></div>
+        </div>
         <!-- Header -->
         <div class="grid grid-cols-[100px_repeat(7,1fr)] bg-gray-900 text-white sticky top-0 z-60" :class="{ 'grid-cols-[100px_repeat(6,1fr)]': viewMode === 'daily' }">
           <div class="header-cell p-5 text-center border-r border-gray-800 font-black text-[9px] uppercase tracking-[0.3em] text-gray-500">
@@ -181,17 +181,17 @@ const showTimeline = () => {
           </template>
         </div>
 
-        <div class="divide-y divide-gray-100">
+        <div class="divide-y divide-white/5">
           <div v-for="time in timeSlots" :key="time" class="grid grid-cols-[100px_repeat(7,1fr)] row-container group" :class="{ 'grid-cols-[100px_repeat(6,1fr)]': viewMode === 'daily' }">
-            <div class="time-column flex items-start justify-center border-r border-gray-100 bg-gray-50/50 group-hover:bg-blue-50/30 transition-colors">
-              <span class="text-[11px] font-black text-gray-400 tabular-nums py-6">{{ time }}</span>
+            <div class="time-column flex items-start justify-center border-r border-white/5 group-hover:bg-blue-500/5 transition-colors">
+              <span class="text-[11px] font-black text-gray-500 tabular-nums py-6">{{ time }}</span>
             </div>
 
             <!-- Celdas Dinámicas -->
             <template v-if="viewMode === 'daily'">
               <div 
                 v-for="room in rooms" :key="room.id"
-                class="relative p-1 border-r border-gray-100 last:border-r-0 transition-all cursor-crosshair"
+                class="relative p-1 border-r border-white/5 last:border-r-0 transition-all cursor-crosshair hover:bg-white/[0.02]"
                 @dragover="onDragOver"
                 @drop="handleDrop($event, time, room)"
                 @click="emit('cellClick', { time, roomId: room.id, day: selectedDay })"
@@ -210,7 +210,7 @@ const showTimeline = () => {
             <template v-else>
               <div 
                 v-for="day in daysOfWeek" :key="day.id"
-                class="relative p-1 border-r border-gray-100 last:border-r-0 transition-all cursor-crosshair"
+                class="relative p-1 border-r border-white/5 last:border-r-0 transition-all cursor-crosshair hover:bg-white/[0.02]"
                 @dragover="onDragOver"
                 @drop="handleDrop($event, time, null, day.id)"
                 @click="emit('cellClick', { time, roomId: activeRoom, day: day.id })"
@@ -238,10 +238,12 @@ const showTimeline = () => {
   display: flex;
   flex-direction: column;
   --row-height: 140px;
+  --header-height: 54px; /* Must match the rendered header row height (p-5 + text) */
 }
 
 .schedule-container.full-screen-grid {
   --row-height: 70px;
+  --header-height: 34px; /* Smaller header in panoramic mode */
 }
 
 .grid-scroll-container {
@@ -253,14 +255,28 @@ const showTimeline = () => {
 }
 
 .grid-content {
-  min-width: 1200px;
+  width: 100%;
+  min-width: 1000px;
   display: flex;
   flex-direction: column;
 }
 
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .grid-content {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-content {
+    min-width: 800px;
+  }
+}
+
 /* Panoramic adjustments */
 .full-screen-grid .grid-content {
-  min-width: 900px;
+  min-width: 100%;
 }
 
 .full-screen-grid .time-column span {
@@ -287,9 +303,9 @@ const showTimeline = () => {
   position: sticky;
   left: 0;
   z-index: 50;
-  background: white;
-  border-right: 1px solid #f1f5f9;
-  box-shadow: 10px 0 15px -10px rgba(0,0,0,0.05);
+  background: #0a1228;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 10px 0 15px -10px rgba(0,0,0,0.3);
 }
 
 .header-cell:first-child {

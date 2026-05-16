@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useSchedule } from '../composables/useSchedule'
 
 const { 
@@ -10,26 +10,6 @@ const {
   resetTime
 } = useSchedule()
 
-const notifications = ref([])
-
-// Función para lanzar notificaciones visuales
-const addNotification = (title, message, type = 'info') => {
-  const id = Date.now()
-  notifications.value.push({ id, title, message, type })
-  setTimeout(() => {
-    notifications.value = notifications.value.filter(n => n.id !== id)
-  }, 10000)
-}
-
-// Sincronizar con eventos de voz (opcional: podrías emitir eventos desde useSchedule)
-// Por ahora, simularemos la detección aquí o usaremos un watcher
-watch(activeSchedules, (newSchedules) => {
-  newSchedules.forEach(s => {
-    if (s.progress >= 85 && s.progress < 86) {
-      addNotification('Clase por culminar', `Ambiente ${s.room}: ${s.courseName}`, 'warning')
-    }
-  })
-}, { deep: true })
 
 const timeInput = ref('')
 const handleTimeTravel = () => {
@@ -54,30 +34,8 @@ const roomSchedules = computed(() => {
 </script>
 
 <template>
-  <div class="monitor-neon min-h-screen bg-black text-white p-4 md:p-6 overflow-hidden font-sans flex flex-col relative">
+  <div class="monitor-container min-h-screen text-white p-4 md:p-6 overflow-hidden font-sans flex flex-col relative">
     
-    <!-- Sistema de Notificaciones Flotantes -->
-    <div class="fixed top-6 right-6 z-[100] flex flex-col gap-4 max-w-md w-full">
-      <TransitionGroup name="notification">
-        <div 
-          v-for="n in notifications" 
-          :key="n.id"
-          class="p-6 rounded-3xl border-2 backdrop-blur-xl shadow-2xl animate-in slide-in-from-right duration-500"
-          :class="n.type === 'warning' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-blue-500/10 border-blue-500/30'"
-        >
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5">
-              <span v-if="n.type === 'warning'">⚠️</span>
-              <span v-else>📢</span>
-            </div>
-            <div>
-              <h4 class="font-black text-[10px] uppercase tracking-widest text-gray-400 mb-1">{{ n.title }}</h4>
-              <p class="text-lg font-bold leading-tight">{{ n.message }}</p>
-            </div>
-          </div>
-        </div>
-      </TransitionGroup>
-    </div>
 
     <!-- Controles de Tiempo (Solo Administradores / Debug) -->
     <div class="fixed bottom-6 right-6 z-[100] group">
@@ -94,7 +52,7 @@ const roomSchedules = computed(() => {
       <div 
         v-for="roomObj in rooms" 
         :key="roomObj.id"
-        class="relative rounded-[3rem] p-8 md:p-10 border-2 transition-all duration-700 flex flex-col overflow-hidden justify-center group"
+        class="relative rounded-[3rem] p-8 md:p-10 border-3 transition-all duration-700 flex flex-col overflow-hidden justify-center group"
         :class="roomSchedules[roomObj.name] ? 'bg-[#0a101f] active-card' : 'bg-[#0f172a]/20 border-dashed border-white/5'"
         :style="roomSchedules[roomObj.name] ? { 
           borderColor: roomSchedules[roomObj.name].color + '44', 
@@ -109,40 +67,53 @@ const roomSchedules = computed(() => {
           <div class="absolute inset-[1.5px] bg-[#0a101f] rounded-[3rem]"></div>
         </div>
         <!-- Header del Salón -->
-        <div class="relative z-20 flex justify-between items-center mb-6">
-          <div class="text-4xl font-black tracking-tighter uppercase">
-            Salón <span :class="roomSchedules[roomObj.name] ? '' : 'text-gray-600'" :style="roomSchedules[roomObj.name] ? { color: roomSchedules[roomObj.name].color } : {}">
-              {{ roomObj.name }}
-            </span>
-          </div>
-          <div v-if="roomSchedules[roomObj.name]" class="px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-            :class="roomSchedules[roomObj.name].isNextClass 
-              ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' 
-              : 'bg-white/5 border-white/10 text-gray-400'"
+        <div class="relative z-20 flex justify-between items-center mb-8">
+          <div 
+            class="flex items-center gap-6 bg-white/5 px-6 py-4 rounded-[2.5rem] border transition-all duration-700"
+            :class="roomSchedules[roomObj.name] ? 'border-white/20' : 'border-white/5'"
+            :style="roomSchedules[roomObj.name] ? { 
+              boxShadow: `0 0 25px ${roomSchedules[roomObj.name].color}15`,
+              borderColor: `${roomSchedules[roomObj.name].color}33`
+            } : {}"
           >
-            {{ roomSchedules[roomObj.name].isNextClass ? 'Siguiente Clase' : 'En Curso' }}
+            <div class="flex items-center justify-center">
+              <svg class="w-8 h-8 transition-colors duration-700" :class="roomSchedules[roomObj.name] ? 'text-white' : 'text-gray-700'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div 
+              class="text-6xl font-black tracking-tighter uppercase leading-none room-name-effect transition-all duration-700"
+              :class="roomSchedules[roomObj.name] ? 'text-white' : 'text-gray-700'"
+              :style="roomSchedules[roomObj.name] ? { 
+                textShadow: `0 0 15px ${roomSchedules[roomObj.name].color}44`,
+                color: '#fff'
+              } : {}"
+            >
+              {{ roomObj.name }}
+            </div>
           </div>
-          <div v-else class="px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest text-emerald-500">
-            Libre
-          </div>
+          
         </div>
 
         <!-- Contenido si hay clase -->
         <template v-if="roomSchedules[roomObj.name]">
           <div class="relative z-20 flex-1 flex flex-col justify-center">
-            <h3 class="text-5xl font-black leading-[1.1] mb-8 tracking-tighter uppercase line-clamp-2 course-title" :style="{ '--course-color': roomSchedules[roomObj.name].color }">
+            <h3 class="text-5xl font-bold leading-[1.1] mb-8 tracking-tight uppercase line-clamp-2 course-title font-outfit" :style="{ '--course-color': roomSchedules[roomObj.name].color }">
               {{ roomSchedules[roomObj.name].courseName }}
             </h3>
 
             <div class="space-y-6 mb-10">
               <div class="flex items-center gap-6">
-                <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] w-20">Docente</div>
+                <div class="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] w-20">Docente</div>
                 <div class="text-2xl font-bold text-white">{{ roomSchedules[roomObj.name].professor }}</div>
               </div>
               <div class="flex items-center gap-6">
-                <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] w-20">Horario</div>
-                <div class="text-3xl font-black tabular-nums" :style="{ color: roomSchedules[roomObj.name].color }">
-                  {{ roomSchedules[roomObj.name].startTime }} - {{ roomSchedules[roomObj.name].endTime }}
+                <div class="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] w-20">Horario</div>
+                <div 
+                  class="text-3xl font-black tabular-nums time-glow" 
+                  :style="{ color: roomSchedules[roomObj.name].color, '--glow-time': roomSchedules[roomObj.name].color }"
+                >
+                  {{ roomSchedules[roomObj.name].startTime }} — {{ roomSchedules[roomObj.name].endTime }}
                 </div>
               </div>
             </div>
@@ -152,14 +123,18 @@ const roomSchedules = computed(() => {
           <div class="relative z-20 mt-auto pt-8 border-t border-white/5 flex items-end justify-between gap-8">
             <div class="flex-1">
               <template v-if="!roomSchedules[roomObj.name].isNextClass">
-                <div class="flex justify-between text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
+                <div class="flex justify-between text-[12px] font-black uppercase tracking-widest text-gray-500 mb-3">
                   <span>Progreso de Clase</span>
                   <span :style="{ color: roomSchedules[roomObj.name].color }">{{ roomSchedules[roomObj.name].progress }}%</span>
                 </div>
                 <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                   <div 
-                    class="h-full rounded-full transition-all duration-1000"
-                    :style="{ width: roomSchedules[roomObj.name].progress + '%', backgroundColor: roomSchedules[roomObj.name].color, boxShadow: `0 0 20px ${roomSchedules[roomObj.name].color}` }"
+                    class="progress-bar-animated h-full rounded-full transition-[width] duration-1000"
+                    :style="{ 
+                      width: roomSchedules[roomObj.name].progress + '%', 
+                      '--bar-color': roomSchedules[roomObj.name].color,
+                      boxShadow: `0 0 20px ${roomSchedules[roomObj.name].color}` 
+                    }"
                   ></div>
                 </div>
               </template>
@@ -179,11 +154,8 @@ const roomSchedules = computed(() => {
 
         <!-- Estado Disponible -->
         <template v-else>
-          <div class="relative z-20 flex-1 flex flex-col items-center justify-center text-center opacity-40 group-hover:opacity-60 transition-opacity">
-            <div class="w-16 h-16 border border-gray-800 rounded-3xl flex items-center justify-center mb-6">
-              <svg class="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            </div>
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600">Ambiente Disponible</p>
+          <div class="relative z-20 flex-1 flex flex-col items-center justify-center text-center opacity-10">
+            <!-- Espacio vacío minimalista para ambientes libres -->
           </div>
         </template>
       </div>
@@ -192,11 +164,33 @@ const roomSchedules = computed(() => {
     <!-- Sutil decoración inferior -->
     <div class="fixed bottom-0 left-0 right-0 h-0.5 bg-blue-500/10"></div>
   </div>
+  
 </template>
 
 <style scoped>
-.monitor-neon {
-  background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&display=swap');
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+.monitor-container {
+  background: linear-gradient(-45deg, #020617, #0a1228, #020617, #0f172a);
+  background-size: 400% 400%;
+  animation: backgroundMove 15s ease infinite;
+}
+
+.room-name-effect {
+  background: linear-gradient(to bottom, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+@keyframes backgroundMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Tipografía de sistema */
@@ -205,18 +199,7 @@ const roomSchedules = computed(() => {
   -webkit-font-smoothing: antialiased;
 }
 
-.notification-enter-active,
-.notification-leave-active {
-  transition: all 0.5s ease;
-}
-.notification-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-.notification-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
+
 
 .active-card {
   box-shadow: 0 0 30px -10px rgba(0,0,0,0.5);
@@ -238,5 +221,42 @@ const roomSchedules = computed(() => {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Subtle neon glow pulse for time display */
+.time-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    text-shadow: 0 0 4px color-mix(in srgb, var(--glow-time) 30%, transparent);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 
+      0 0 8px color-mix(in srgb, var(--glow-time) 50%, transparent),
+      0 0 20px color-mix(in srgb, var(--glow-time) 20%, transparent);
+    filter: brightness(1.15);
+  }
+}
+
+/* Animated gradient progress bar */
+.progress-bar-animated {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bar-color) 60%, black) 0%,
+    var(--bar-color) 30%,
+    color-mix(in srgb, var(--bar-color) 70%, white) 50%,
+    var(--bar-color) 70%,
+    color-mix(in srgb, var(--bar-color) 60%, black) 100%
+  );
+  background-size: 200% 100%;
+  animation: gradient-sweep 2s ease-in-out infinite;
+}
+
+@keyframes gradient-sweep {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 </style>

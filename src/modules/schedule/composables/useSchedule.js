@@ -103,6 +103,7 @@ export function useSchedule() {
         if (n.includes('diseño')) return '#F58220' // Design Orange
         if (n.includes('power')) return '#F2C811' // Power BI Yellow
         if (n.includes('auto')) return '#E52D27' // AutoCAD Red
+
         return '#0078D4' // Revit / Default Blue
       }
 
@@ -191,14 +192,14 @@ export function useSchedule() {
     onUnmounted(() => clearInterval(eventTimer))
   })
 
+  // Returns fractional hours from 7:00 AM (e.g., 9:30 AM = 2.5)
+  // The grid component uses this with calc() and --row-height for pixel-perfect positioning
   const timelinePosition = computed(() => {
     const h = currentTime.value.getHours()
     const m = currentTime.value.getMinutes()
     if (h < 7 || h > 23) return -1
     const startHour = 7
-    const totalHours = 17
-    const currentPosition = (h - startHour) + (m / 60)
-    return (currentPosition / totalHours) * 100
+    return (h - startHour) + (m / 60)
   })
 
   // --- ACTIONS ---

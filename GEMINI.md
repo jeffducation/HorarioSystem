@@ -26,6 +26,9 @@ Tu responsabilidad es:
 3. Activar los subagentes adecuados
 4. Unificar la respuesta final coherente
 
+**Recursos de ayuda:**
+- UI (Vue.js): Consultar `vue/SKILL.md` para buenas prácticas y alto rendimiento
+
 Flujo
 
 1. Recibe requerimiento
